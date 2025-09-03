@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="EditTextSearch" parent="Widget.AppCompat.EditText">
+        <item name="android:inputType">text</item>
+        <item name="android:lines">1</item>
+        <item name="android:maxLength">150</item>
+        <item name="android:hint">@string/search</item>
+        <item name="android:textColorHint">@color/black</item>
+        <item name="android:textColor">@color/black</item>
+        <item name="android:background">@color/white</item>
+        <item name="android:layout_marginHorizontal">@dimen/spacing_sm</item>
+        <item name="android:paddingHorizontal">12dp</item>
+        <item name="android:drawableStart">@drawable/search_icon</item>
+        <item name="android:drawablePadding">@dimen/spacing_xs</item>
+        <item name="android:drawableTint">@color/black</item>
+        <item name="android:fontFamily">@font/ys_display_regular</item>
+        <item name="android:textSize">@dimen/text_size_md</item>
+    </style>
+</resources>

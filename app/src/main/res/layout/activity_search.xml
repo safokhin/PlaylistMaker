@@ -1,23 +1,44 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/activity_background"
     android:orientation="vertical"
-    android:background="@color/primary"
     tools:context=".SearchActivity">
 
-    <TextView
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/btn_back"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_gravity="center"
-        android:gravity="center"
-        android:text="@string/search_activity"
-        android:textColor="@color/white"
-        android:textSize="@dimen/text_size_xl"
-        android:textFontWeight="500" />
+        android:layout_height="@dimen/toolbar_height"
+        app:contentInsetStartWithNavigation="0dp"
+        app:navigationIconTint="?attr/colorPrimary"
+        app:navigationIcon="@drawable/arrow_left_icon"
+        app:title="@string/search" />
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="@dimen/spacing_sm"
+        android:orientation="horizontal">
+
+        <EditText
+            android:id="@+id/edit_text_search"
+            android:layout_width="match_parent"
+            android:layout_height="36dp"
+            android:hint="@string/search"
+            style="@style/EditTextSearch" />
+
+        <ImageView
+            android:id="@+id/icon_clear"
+            android:layout_width="16dp"
+            android:layout_height="16dp"
+            android:layout_marginEnd="10dp"
+            android:layout_gravity="end|center_vertical"
+            android:src="@drawable/cross_icon"
+            android:visibility="gone" />
+    </FrameLayout>
+
 </LinearLayout>
-
-
-
