@@ -1,7 +1,6 @@
 package com.practicum.playlistmaker
 
 import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
 import android.widget.Button
 import androidx.activity.enableEdgeToEdge
@@ -39,7 +38,7 @@ class SettingsActivity : AppCompatActivity() {
         buttonSupport.setOnClickListener {
             val intent = Intent(Intent.ACTION_SENDTO)
             intent.data = "mailto:".toUri()
-            intent.putExtra(Intent.EXTRA_EMAIL, arrayOf(R.string.email))
+            intent.putExtra(Intent.EXTRA_EMAIL, arrayOf(getString(R.string.email)))
             intent.putExtra(Intent.EXTRA_SUBJECT, getString(R.string.email_subject))
             intent.putExtra(Intent.EXTRA_TEXT, getString(R.string.email_body))
             startActivity(intent)
