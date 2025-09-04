@@ -18,5 +18,6 @@
     <dimen name="radius_lg">16dp</dimen>
     <dimen name="radius_xl">32dp</dimen>
 
-    <dimen name="button_height_settings">61dp</dimen>
+    <dimen name="button_height_settings">62dp</dimen>
+    <dimen name="toolbar_height">56dp</dimen>
 </resources>
