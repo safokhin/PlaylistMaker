@@ -7,6 +7,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.practicum.playlistmaker.utils.dpToPx
+import java.text.SimpleDateFormat
+import java.util.Locale
 
 class TrackViewHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
     private val sourceTrackName = itemView.findViewById<TextView>(R.id.trackName)
@@ -17,7 +19,7 @@ class TrackViewHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
     fun bind(model: Track) {
         sourceTrackName.text = model.trackName
         sourceArtistName.text = model.artistName
-        sourceTrackTime.text = model.trackTime
+        sourceTrackTime.text = SimpleDateFormat("mm:ss", Locale.getDefault()).format(model.trackTimeMillis)
 
         val roundedVal: Float = itemView.context.resources.getDimension(R.dimen.track_image_border_px)
 

@@ -30,6 +30,8 @@
             android:layout_width="match_parent"
             android:layout_height="36dp"
             android:hint="@string/search"
+            android:imeOptions="actionDone"
+            android:singleLine="true"
             style="@style/EditTextSearch" />
 
         <ImageView
@@ -43,10 +45,19 @@
             style="@style/EditTextSearchClear" />
     </FrameLayout>
 
+    <include
+        android:id="@+id/placeholderEmpty"
+        android:visibility="gone"
+        layout="@layout/track_empty" />
+
+    <include
+        android:id="@+id/placeholderError"
+        android:visibility="gone"
+        layout="@layout/track_error" />
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerTrackList"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
-
 </LinearLayout>

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/placeholderError"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    style="@style/Placeholder">
+
+    <ImageView
+        android:layout_width="120dp"
+        android:layout_height="120dp"
+        android:src="@drawable/internet_error"
+        style="@style/PlaceholderImage" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/connection_problems"
+        android:layout_marginBottom="@dimen/spacing_md"
+        style="@style/PlaceholderText" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/placeholderErrorButton"
+        android:text="@string/update"
+        style="@style/PlaceholderButton" />
+</LinearLayout>

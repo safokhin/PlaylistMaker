@@ -50,4 +50,27 @@
     <style name="EditTextSearchClear">
         <item name="android:tint">@color/gray</item>
     </style>
+    <style name="Placeholder">
+        <item name="android:paddingHorizontal">24dp</item>
+        <item name="android:gravity">center</item>
+        <item name="android:orientation">vertical</item>
+        <item name="android:layout_marginTop">102dp</item>
+    </style>
+    <style name="PlaceholderImage">
+        <item name="android:layout_marginBottom">@dimen/spacing_sm</item>
+    </style>
+    <style name="PlaceholderText">
+        <item name="android:fontFamily">@font/ys_display_medium</item>
+        <item name="android:textColor">?attr/colorPrimary</item>
+        <item name="android:textFontWeight">400</item>
+        <item name="android:textSize">@dimen/text_size_lg</item>
+        <item name="android:gravity">center</item>
+    </style>
+    <style name="PlaceholderButton">
+        <item name="android:fontFamily">@font/ys_display_medium</item>
+        <item name="android:textFontWeight">500</item>
+        <item name="android:textSize">@dimen/text_size_sm</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="cornerRadius">54dp</item>
+    </style>
 </resources>
