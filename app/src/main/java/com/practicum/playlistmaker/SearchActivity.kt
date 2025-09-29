@@ -145,11 +145,11 @@ class SearchActivity : AppCompatActivity() {
 
         itunesApiService.findTrack(str).enqueue(object: Callback<TrackResponse> {
             override fun onResponse(call: Call<TrackResponse>, response: Response<TrackResponse>) {
-                if(response.code() == 200) {
-                    trackList.clear()
-                    placeholderEmpty.visibility = View.GONE
-                    placeholderError.visibility = View.GONE
+                trackList.clear()
+                placeholderEmpty.visibility = View.GONE
+                placeholderError.visibility = View.GONE
 
+                if(response.code() == 200) {
                     if(response.body()?.results?.isNotEmpty() == true) {
                         trackList.addAll(response.body()?.results!!)
                     } else {
@@ -165,9 +165,10 @@ class SearchActivity : AppCompatActivity() {
             }
 
             override fun onFailure(call: Call<TrackResponse>, t: Throwable) {
+                trackList.clear()
+                placeholderEmpty.visibility = View.GONE
                 placeholderError.visibility = View.VISIBLE
 
-                trackList.clear()
                 trackAdapter.notifyDataSetChanged()
             }
         } )
