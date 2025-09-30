@@ -6,6 +6,7 @@
     <color name="gray">#AEAFB4</color>
     <color name="gray_light">#E6E8EB</color>
     <color name="red">#F56B6C</color>
+    <color name="yellow">#FCD452</color>
 
     <color name="text_color">?attr/colorOnPrimary</color>
     <color name="activity_background">@color/white</color>

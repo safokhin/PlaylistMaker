@@ -1,11 +1,15 @@
 package com.practicum.playlistmaker
 
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.view.View
+import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
+import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageView
 import androidx.activity.enableEdgeToEdge
@@ -14,9 +18,27 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.appbar.MaterialToolbar
+import com.practicum.playlistmaker.api.ItunesApi
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
 
 class SearchActivity : AppCompatActivity() {
+    private val itunesBaseUrl = "https://itunes.apple.com"
+    private val retrofit = Retrofit.Builder()
+        .baseUrl(itunesBaseUrl)
+        .addConverterFactory(GsonConverterFactory.create())
+        .build()
+    private val itunesApiService = retrofit.create(ItunesApi::class.java)
     private var textSearch: String = ""
+    private var trackList = ArrayList<Track>()
+
+    val trackAdapter = TrackAdapter(trackList)
+
+    private lateinit var placeholderEmpty: View
+    private lateinit var placeholderError: View
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -28,43 +50,21 @@ class SearchActivity : AppCompatActivity() {
             insets
         }
 
+        placeholderEmpty = findViewById<View>(R.id.placeholderEmpty)
+        placeholderError = findViewById<View>(R.id.placeholderError)
+        placeholderError.findViewById<Button>(R.id.placeholderErrorButton).setOnClickListener {
+            findTrack(textSearch)
+        }
+
         val buttonBack = findViewById<MaterialToolbar>(R.id.btn_back)
         val editTextSearch = findViewById<EditText>(R.id.edit_text_search)
         val buttonClear = findViewById<ImageView>(R.id.icon_clear)
 
-        buttonBack.setNavigationOnClickListener {
-            finish()
-        }
-
-        buttonClear.setOnClickListener {
-            editTextSearch.setText("")
-            val inputMethodManager = getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager
-            inputMethodManager?.hideSoftInputFromWindow(editTextSearch.windowToken, 0)
-        }
-
-        val textWatcherSearch = object : TextWatcher {
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                textSearch = s.toString()
-                buttonClear.visibility = clearButtonVisibility(s)
-            }
-
-            override fun afterTextChanged(s: Editable?) {}
-        }
-        editTextSearch.addTextChangedListener(textWatcherSearch)
-
-        // TODO: Тестовые данные (потом удалить)
-        val trackList = listOf(
-            Track("Smells Like Teen Spirit", "Nirvana", "5:01", "https://is5-ssl.mzstatic.com/image/thumb/Music115/v4/7b/58/c2/7b58c21a-2b51-2bb2-e59a-9bb9b96ad8c3/00602567924166.rgb.jpg/100x100bb.jpg"),
-            Track("Billie Jean", "Michael Jackson", "4:35", "https://is5-ssl.mzstatic.com/image/thumb/Music125/v4/3d/9d/38/3d9d3811-71f0-3a0e-1ada-3004e56ff852/827969428726.jpg/100x100bb.jpg"),
-            Track("Stayin' Alive", "Bee Gees", "4:10", "https://is4-ssl.mzstatic.com/image/thumb/Music115/v4/1f/80/1f/1f801fc1-8c0f-ea3e-d3e5-387c6619619e/16UMGIM86640.rgb.jpg/100x100bb.jpg"),
-            Track("Whole Lotta Love", "Led Zeppelin", "5:33", "https://is2-ssl.mzstatic.com/image/thumb/Music62/v4/7e/17/e3/7e17e33f-2efa-2a36-e916-7f808576cf6b/mzm.fyigqcbs.jpg/100x100bb.jpg"),
-            Track("Sweet Child O'Mine", "Guns N' Roses", "5:03", "https://is5-ssl.mzstatic.com/image/thumb/Music125/v4/a0/4d/c4/a04dc484-03cc-02aa-fa82-5334fcb4bc16/18UMGIM24878.rgb.jpg/100x100bb.jpg"),
-        )
+        buttonBackHandler(buttonBack)
+        buttonClearHandler(buttonClear, editTextSearch)
+        textWatcherHandler(buttonClear, editTextSearch)
 
         val recyclerTrackList = findViewById<RecyclerView>(R.id.recyclerTrackList)
-        val trackAdapter = TrackAdapter(trackList)
         recyclerTrackList.adapter = trackAdapter
     }
 
@@ -82,13 +82,96 @@ class SearchActivity : AppCompatActivity() {
         editTextSearch.setText(textSearchVal)
     }
 
+    /** Обработчик клика кнопки "Назад" */
+    private fun buttonBackHandler(buttonBack: MaterialToolbar) {
+        buttonBack.setNavigationOnClickListener {
+            finish()
+        }
+    }
+
+    /** Обработчик клика кнопки "Очистить поиск" */
+    private fun buttonClearHandler(buttonClear: ImageView, editTextSearch: EditText) {
+        buttonClear.setOnClickListener {
+            editTextSearch.setText("")
+            trackList.clear()
+            placeholderEmpty.visibility = View.GONE
+            placeholderError.visibility = View.GONE
+            trackAdapter.notifyDataSetChanged()
+
+            val inputMethodManager =
+                getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager
+            inputMethodManager?.hideSoftInputFromWindow(editTextSearch.windowToken, 0)
+        }
+    }
+
+    /** Обработчик изменения текста */
+    private fun textWatcherHandler(buttonClear: ImageView, editTextSearch: EditText) {
+        val textWatcherSearch = object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                textSearch = s.toString().trim()
+                buttonClear.visibility = clearButtonVisibility(s)
+            }
+
+            override fun afterTextChanged(s: Editable?) {}
+        }
+
+        editTextSearch.addTextChangedListener(textWatcherSearch)
+
+        editTextSearch.setOnEditorActionListener { _, actionId, _ ->
+            // Запрос отправляется только если поле не пустое (иначе не реагируем)
+            if (actionId == EditorInfo.IME_ACTION_DONE && !textSearch.isEmpty()) {
+                findTrack(textSearch)
+
+                true
+            }
+
+            false
+        }
+    }
+
     /** Отображение EditText */
     private fun clearButtonVisibility(s: CharSequence?): Int {
-        return if(s.isNullOrBlank()) {
+        return if (s.isNullOrBlank()) {
             View.GONE
         } else {
             View.VISIBLE
         }
+    }
+
+    /** Поиск треков */
+    private fun findTrack(str: String) {
+
+        itunesApiService.findTrack(str).enqueue(object: Callback<TrackResponse> {
+            override fun onResponse(call: Call<TrackResponse>, response: Response<TrackResponse>) {
+                trackList.clear()
+                placeholderEmpty.visibility = View.GONE
+                placeholderError.visibility = View.GONE
+
+                if(response.code() == 200) {
+                    if(response.body()?.results?.isNotEmpty() == true) {
+                        trackList.addAll(response.body()?.results!!)
+                    } else {
+                        placeholderEmpty.visibility = View.VISIBLE
+                    }
+
+                } else {
+                    placeholderError.visibility = View.VISIBLE
+                }
+
+                // Обновление списка всегда (успешный запрос -> ошибка)
+                trackAdapter.notifyDataSetChanged()
+            }
+
+            override fun onFailure(call: Call<TrackResponse>, t: Throwable) {
+                trackList.clear()
+                placeholderEmpty.visibility = View.GONE
+                placeholderError.visibility = View.VISIBLE
+
+                trackAdapter.notifyDataSetChanged()
+            }
+        } )
     }
 
     companion object {
