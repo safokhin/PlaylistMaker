@@ -35,4 +35,14 @@
     <style name="EditTextSearchClear">
         <item name="android:tint">@color/black</item>
     </style>
+    <style name="SwitchSettingsActivity">
+        <item name="android:textColor">?attr/colorPrimary</item>
+        <item name="android:textSize">@dimen/text_size_md</item>
+        <item name="android:textFontWeight">400</item>
+        <item name="android:paddingStart">@dimen/spacing_sm</item>
+        <item name="android:paddingEnd">6dp</item>
+        <item name="switchMinWidth">32dp</item>
+        <item name="thumbTint">@color/blue</item>
+        <item name="trackTint">@color/blue_light</item>
+    </style>
 </resources>

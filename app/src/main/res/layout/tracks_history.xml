@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/tracksHistory"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    style="@style/TracksHistory">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/you_were_looking"
+        android:layout_marginBottom="@dimen/spacing_md"
+        style="@style/PlaceholderText" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerTrackListHistory"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/clearTrackListHistory"
+        android:text="@string/clear_history"
+        style="@style/PlaceholderButton" />
+</LinearLayout>
