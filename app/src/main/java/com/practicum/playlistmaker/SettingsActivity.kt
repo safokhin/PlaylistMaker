@@ -9,6 +9,7 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.google.android.material.appbar.MaterialToolbar
 import androidx.core.net.toUri
+import com.google.android.material.switchmaterial.SwitchMaterial
 
 class SettingsActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -21,21 +22,18 @@ class SettingsActivity : AppCompatActivity() {
             insets
         }
 
-        val buttonBack = findViewById<MaterialToolbar>(R.id.btn_back)
-        buttonBack.setNavigationOnClickListener {
+        findViewById<MaterialToolbar>(R.id.btn_back).setNavigationOnClickListener {
             finish()
         }
 
-        val buttonShare = findViewById<Button>(R.id.btn_share)
-        buttonShare.setOnClickListener {
+        findViewById<Button>(R.id.btn_share).setOnClickListener {
             val intent = Intent(Intent.ACTION_SEND)
             intent.type = "text/plain"
             intent.putExtra(Intent.EXTRA_TEXT, getString(R.string.link_course))
             startActivity(intent)
         }
 
-        val buttonSupport = findViewById<Button>(R.id.btn_support)
-        buttonSupport.setOnClickListener {
+        findViewById<Button>(R.id.btn_support).setOnClickListener {
             val intent = Intent(Intent.ACTION_SENDTO)
             intent.data = "mailto:".toUri()
             intent.putExtra(Intent.EXTRA_EMAIL, arrayOf(getString(R.string.email)))
@@ -44,10 +42,15 @@ class SettingsActivity : AppCompatActivity() {
             startActivity(intent)
         }
 
-        val buttonAgree = findViewById<Button>(R.id.btn_agree)
-        buttonAgree.setOnClickListener {
+        findViewById<Button>(R.id.btn_agree).setOnClickListener {
             val intent = Intent(Intent.ACTION_VIEW, getString(R.string.link_agree).toUri())
             startActivity(intent)
+        }
+
+        val switcherTheme = findViewById<SwitchMaterial>(R.id.switcherTheme)
+        switcherTheme.isChecked = (applicationContext as App).themeStorage.isDarkTheme()
+        switcherTheme.setOnCheckedChangeListener { switcher, checked ->
+            (applicationContext as App).themeStorage.setTheme(checked)
         }
     }
 }

@@ -25,14 +25,12 @@
         android:orientation="vertical">
 
         <com.google.android.material.switchmaterial.SwitchMaterial
+            android:id="@+id/switcherTheme"
+            style="@style/SwitchSettingsActivity"
             android:layout_width="match_parent"
             android:layout_height="@dimen/button_height_settings"
-            android:text="@string/night_theme"
-            android:textColor="?attr/colorPrimary"
-            android:textSize="@dimen/text_size_md"
-            android:textFontWeight="400"
-            android:paddingStart="@dimen/spacing_sm"
-            android:paddingEnd="6dp" />
+            android:thumb="@drawable/custom_switch_thumb"
+            android:text="@string/night_theme" />
 
         <Button
             android:id="@+id/btn_share"

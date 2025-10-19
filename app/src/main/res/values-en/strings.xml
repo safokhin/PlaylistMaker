@@ -13,4 +13,6 @@
     <string name="search_activity">Search activity</string>
     <string name="empty">Nothing found</string>
     <string name="connection_problems">Connection problems\n\nDownload failed. Check your internet connection.</string>
+    <string name="you_were_looking">You were looking for</string>
+    <string name="clear_history">Clear history</string>
 </resources>

@@ -46,14 +46,16 @@
     </FrameLayout>
 
     <include
-        android:id="@+id/placeholderEmpty"
         android:visibility="gone"
         layout="@layout/track_empty" />
 
     <include
-        android:id="@+id/placeholderError"
         android:visibility="gone"
         layout="@layout/track_error" />
+
+    <include
+        android:visibility="gone"
+        layout="@layout/tracks_history" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerTrackList"
