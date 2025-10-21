@@ -15,10 +15,19 @@ import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.practicum.playlistmaker.utils.dpToPx
 import java.text.SimpleDateFormat
-import java.time.format.DateTimeFormatter
 import java.util.Locale
 
 class PlayerActivity: AppCompatActivity() {
+    private lateinit var trackImg: ImageView
+    private lateinit var trackName: TextView
+    private lateinit var trackArtist: TextView
+    private lateinit var trackDuration: TextView
+    private lateinit var trackAlbum: TextView
+    private lateinit var trackYear: TextView
+    private lateinit var trackGenre: TextView
+    private lateinit var trackCountry: TextView
+    private lateinit var timePlayer: TextView
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -42,15 +51,15 @@ class PlayerActivity: AppCompatActivity() {
         val gson = Gson()
         val tokenType = object : TypeToken<Track>() {}.type
 
-        val trackImg = findViewById<ImageView>(R.id.trackImg)
-        val trackName = findViewById<TextView>(R.id.trackNamePlayer)
-        val trackArtist = findViewById<TextView>(R.id.artistNamePlayer)
-        val trackDuration = findViewById<TextView>(R.id.durationValuePlayer)
-        val trackAlbum = findViewById<TextView>(R.id.albumValuePlayer)
-        val trackYear = findViewById<TextView>(R.id.yearValuePlayer)
-        val trackGenre = findViewById<TextView>(R.id.genreValuePlayer)
-        val trackCountry = findViewById<TextView>(R.id.countryValuePlayer)
-        val timePlayer = findViewById<TextView>(R.id.timePlayer)
+        trackImg = findViewById<ImageView>(R.id.trackImg)
+        trackName = findViewById<TextView>(R.id.trackNamePlayer)
+        trackArtist = findViewById<TextView>(R.id.artistNamePlayer)
+        trackDuration = findViewById<TextView>(R.id.durationValuePlayer)
+        trackAlbum = findViewById<TextView>(R.id.albumValuePlayer)
+        trackYear = findViewById<TextView>(R.id.yearValuePlayer)
+        trackGenre = findViewById<TextView>(R.id.genreValuePlayer)
+        trackCountry = findViewById<TextView>(R.id.countryValuePlayer)
+        timePlayer = findViewById<TextView>(R.id.timePlayer)
 
         val track: Track? = try {
             gson.fromJson(intent.getStringExtra(EXTRA_TRACK_KEY), tokenType)
@@ -58,12 +67,7 @@ class PlayerActivity: AppCompatActivity() {
             null
         }
 
-        //     val customFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss")
-        //    val customFormattedString: String = currentDateTime.format(customFormatter)
-
         if(track != null) {
-            val customFormatter = DateTimeFormatter.ofPattern("yyyy")
-
             trackName.text = track.trackName
             trackArtist.text = track.artistName
             trackDuration.text = SimpleDateFormat("mm:ss", Locale.getDefault()).format(track.trackTimeMillis)
