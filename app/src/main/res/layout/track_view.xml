@@ -20,7 +20,7 @@
             android:id="@+id/trackName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            tools:text="Smells Like Teen Spirit Smells Like Teen Spirit Smells Like Teen Spirit"
+            tools:text="Looong track name Looong track name Looong track name Looong track name"
             style="@style/TrackName" />
 
         <LinearLayout

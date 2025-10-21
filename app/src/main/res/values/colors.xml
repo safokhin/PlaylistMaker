@@ -3,7 +3,7 @@
     <color name="blue">#3772E7</color>
     <color name="blue_light">#9FBBF3</color>
     <color name="black">#1A1B22</color>
-    <color name="white">#FFFFFFFF</color>
+    <color name="white">#FFFFFF</color>
     <color name="gray">#AEAFB4</color>
     <color name="gray_light">#E6E8EB</color>
     <color name="red">#F56B6C</color>
@@ -12,4 +12,6 @@
     <color name="text_color">?attr/colorOnPrimary</color>
     <color name="activity_background">@color/white</color>
     <color name="activity_main_background">#3772E7</color>
+    <color name="button_player_background">@color/black</color>
+    <color name="button_player_color">@color/white</color>
 </resources>

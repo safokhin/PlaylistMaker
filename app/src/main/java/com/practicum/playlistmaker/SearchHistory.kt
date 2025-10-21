@@ -2,7 +2,6 @@ package com.practicum.playlistmaker
 
 import android.content.Context
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener
-import android.util.Log
 import com.google.gson.Gson
 import androidx.core.content.edit
 import com.google.gson.reflect.TypeToken
@@ -30,7 +29,6 @@ class SearchHistory(context: Context) {
             trackList.removeAt(9)
         }
 
-        Log.i("CLICK", track.toString())
         sharedPreferences.edit { putString(SHARED_PREFS_KEY, gson.toJson(trackList)) }
     }
 
