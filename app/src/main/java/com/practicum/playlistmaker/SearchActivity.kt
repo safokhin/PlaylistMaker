@@ -1,6 +1,7 @@
 package com.practicum.playlistmaker
 
 import android.annotation.SuppressLint
+import android.content.Intent
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener
 import android.os.Bundle
 import android.text.Editable
@@ -18,6 +19,7 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.appbar.MaterialToolbar
+import com.google.gson.Gson
 import com.practicum.playlistmaker.api.ItunesApi
 import retrofit2.Call
 import retrofit2.Callback
@@ -26,6 +28,7 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
 class SearchActivity : AppCompatActivity() {
+    private val gson = Gson()
     private val retrofit = Retrofit.Builder()
         .baseUrl(ITUNES_BASE_URL)
         .addConverterFactory(GsonConverterFactory.create())
@@ -80,14 +83,15 @@ class SearchActivity : AppCompatActivity() {
 
         val recyclerTrackList = findViewById<RecyclerView>(R.id.recyclerTrackList)
         trackAdapter = TrackAdapter(mutableListOf()) { track ->
-            history.addTracks(track)
+            selectTrackHandler(track)
         }
         recyclerTrackList.adapter = trackAdapter
 
         // История поиска
         val recyclerTrackListHistory = findViewById<RecyclerView>(R.id.recyclerTrackListHistory)
         trackHistoryAdapter = TrackAdapter(mutableListOf()) { track ->
-            history.addTracks(track)
+            selectTrackHandler(track)
+
         }
         recyclerTrackListHistory.adapter = trackHistoryAdapter
 
@@ -145,6 +149,17 @@ class SearchActivity : AppCompatActivity() {
             val inputMethodManager = getSystemService(INPUT_METHOD_SERVICE) as? InputMethodManager
             inputMethodManager?.hideSoftInputFromWindow(editTextSearch.windowToken, 0)
         }
+    }
+
+    /** Обработчик клика при выборе трека */
+    private fun selectTrackHandler(track: Track) {
+        // Добавление трека в историю
+        history.addTracks(track)
+
+        // Переход на страницу плеера + передача информации
+        val intent = Intent(this, PlayerActivity::class.java)
+        intent.putExtra(PlayerActivity.EXTRA_TRACK_KEY, gson.toJson(track))
+        startActivity(intent)
     }
 
     /** Подключение логики для поля "Поиск" */
