@@ -1,6 +1,9 @@
 package com.practicum.playlistmaker
 
+import android.media.MediaPlayer
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import android.widget.ImageView
 import android.widget.TextView
@@ -27,6 +30,13 @@ class PlayerActivity: AppCompatActivity() {
     private lateinit var trackGenre: TextView
     private lateinit var trackCountry: TextView
     private lateinit var timePlayer: TextView
+    private lateinit var playerControl: ImageView
+
+    private var track: Track? = null
+    private var mediaPlayer = MediaPlayer()
+    private var playerState = STATE_DEFAULT
+
+    private var mainThreadHandler: Handler? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -38,53 +48,70 @@ class PlayerActivity: AppCompatActivity() {
             insets
         }
 
+        playerControl = findViewById(R.id.playerControl)
+
         findViewById<MaterialToolbar>(R.id.btn_back).setNavigationOnClickListener {
             finish()
         }
 
+        mainThreadHandler = Handler(Looper.getMainLooper())
 
-        bindTrack()
+        initTrack()
+        init()
+        preparePlayer()
     }
 
-    /** Заполение activity данными */
-    private fun bindTrack() {
+    override fun onPause() {
+        super.onPause()
+        pausePlayer()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        stopProgress()
+        mediaPlayer.release()
+    }
+
+    private fun initTrack() {
         val gson = Gson()
         val tokenType = object : TypeToken<Track>() {}.type
 
-        trackImg = findViewById<ImageView>(R.id.trackImg)
-        trackName = findViewById<TextView>(R.id.trackNamePlayer)
-        trackArtist = findViewById<TextView>(R.id.artistNamePlayer)
-        trackDuration = findViewById<TextView>(R.id.durationValuePlayer)
-        trackAlbum = findViewById<TextView>(R.id.albumValuePlayer)
-        trackYear = findViewById<TextView>(R.id.yearValuePlayer)
-        trackGenre = findViewById<TextView>(R.id.genreValuePlayer)
-        trackCountry = findViewById<TextView>(R.id.countryValuePlayer)
-        timePlayer = findViewById<TextView>(R.id.timePlayer)
-
-        val track: Track? = try {
+        track = try {
             gson.fromJson(intent.getStringExtra(EXTRA_TRACK_KEY), tokenType)
         } catch (_: Exception) {
             null
         }
+    }
 
-        if(track != null) {
-            trackName.text = track.trackName
-            trackArtist.text = track.artistName
-            trackDuration.text = SimpleDateFormat("mm:ss", Locale.getDefault()).format(track.trackTimeMillis)
-            timePlayer.text = SimpleDateFormat("mm:ss", Locale.getDefault()).format(track.trackTimeMillis) // Пока просто время трека, в дальнейшем изменить
-            trackAlbum.text = track.collectionName
-            trackYear.text = parseYear(track.releaseDate ?: "")
-            trackGenre.text = track.primaryGenreName
-            trackCountry.text = track.country
+    /** Инициализация activity */
+    private fun init() {
+        val trackData = track ?: return
 
-            val roundedVal: Float = resources.getDimension(R.dimen.track_image_border_px)
+        trackImg = findViewById(R.id.trackImg)
+        trackName = findViewById(R.id.trackNamePlayer)
+        trackArtist = findViewById(R.id.artistNamePlayer)
+        trackDuration = findViewById(R.id.durationValuePlayer)
+        trackAlbum = findViewById(R.id.albumValuePlayer)
+        trackYear = findViewById(R.id.yearValuePlayer)
+        trackGenre = findViewById(R.id.genreValuePlayer)
+        trackCountry = findViewById(R.id.countryValuePlayer)
+        timePlayer = findViewById(R.id.timePlayer)
 
-            Glide.with(this)
-                .load(track.artworkUrl100.replaceAfterLast('/',"512x512bb.jpg"))
-                .placeholder(R.drawable.track_placeholder_icon)
-                .transform(RoundedCorners(dpToPx(roundedVal, this)))
-                .into(trackImg)
-        }
+        trackName.text = trackData.trackName
+        trackArtist.text = trackData.artistName
+        trackDuration.text = SimpleDateFormat("mm:ss", Locale.getDefault()).format(trackData.trackTimeMillis)
+        trackAlbum.text = trackData.collectionName
+        trackYear.text = parseYear(trackData.releaseDate ?: "")
+        trackGenre.text = trackData.primaryGenreName
+        trackCountry.text = trackData.country
+
+        val roundedVal: Float = resources.getDimension(R.dimen.track_image_border_px)
+
+        Glide.with(this)
+            .load(trackData.artworkUrl100.replaceAfterLast('/',"512x512bb.jpg"))
+            .placeholder(R.drawable.track_placeholder_icon)
+            .transform(RoundedCorners(dpToPx(roundedVal, this)))
+            .into(trackImg)
     }
 
     private fun parseYear(date: String): String {
@@ -103,7 +130,83 @@ class PlayerActivity: AppCompatActivity() {
         }
     }
 
+    private fun preparePlayer() {
+        val url = track?.previewUrl ?: return
+
+        setTimerText(0)
+        mediaPlayer.setDataSource(url)
+        mediaPlayer.prepareAsync()
+        // Завершение подготовки
+        mediaPlayer.setOnPreparedListener {
+            playerState = STATE_PREPARED
+        }
+        // Завершение воспроизведения
+        mediaPlayer.setOnCompletionListener {
+            playerControl.setImageResource(R.drawable.button_play)
+            playerState = STATE_PREPARED
+            stopProgress()
+            setTimerText(0)
+        }
+
+        playerControl.setOnClickListener {
+            playbackControl()
+        }
+    }
+
+    private fun playbackControl() {
+        when(playerState) {
+            STATE_PLAYING -> {
+                pausePlayer()
+            }
+            STATE_PREPARED, STATE_PAUSED -> {
+                startPlayer()
+            }
+        }
+    }
+
+    private fun startPlayer() {
+        mediaPlayer.start()
+        playerControl.setImageResource(R.drawable.button_stop)
+        playerState = STATE_PLAYING
+        startProgress()
+    }
+
+    private fun pausePlayer() {
+        mediaPlayer.pause()
+        playerControl.setImageResource(R.drawable.button_play)
+        playerState = STATE_PAUSED
+
+        stopProgress()
+    }
+
+    private fun startProgress() {
+        mainThreadHandler?.post(createUpdateProgress())
+    }
+
+    private fun stopProgress() {
+        mainThreadHandler?.removeCallbacksAndMessages(null)
+    }
+
+    private fun createUpdateProgress(): Runnable {
+        return object : Runnable {
+            override fun run() {
+                setTimerText(mediaPlayer.currentPosition)
+                mainThreadHandler?.postDelayed(this, DELAY_UPDATE_PROGRESS)
+            }
+        }
+    }
+
+    private fun setTimerText(time: Int) {
+        timePlayer.text = SimpleDateFormat("mm:ss", Locale.getDefault()).format(time)
+    }
+
     companion object {
         const val EXTRA_TRACK_KEY = "extra_track"
+        private const val STATE_DEFAULT = 0
+        private const val STATE_PREPARED = 1
+        private const val STATE_PLAYING = 2
+        private const val STATE_PAUSED = 3
+
+        private const val DELAY_UPDATE_PROGRESS = 500L
     }
 }

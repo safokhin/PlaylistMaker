@@ -45,6 +45,12 @@
             style="@style/EditTextSearchClear" />
     </FrameLayout>
 
+    <ProgressBar android:id="@+id/progressBar"
+        android:layout_width="44dp"
+        android:layout_height="44dp"
+        android:visibility="gone"
+        style="@style/ProgressBar" />
+
     <include
         android:visibility="gone"
         layout="@layout/track_empty" />
