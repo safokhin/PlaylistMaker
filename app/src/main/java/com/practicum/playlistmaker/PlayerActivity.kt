@@ -21,6 +21,7 @@ import java.text.SimpleDateFormat
 import java.util.Locale
 
 class PlayerActivity: AppCompatActivity() {
+    private enum class PlayerState { DEFAULT, PREPARED, PLAYING, PAUSED }
     private lateinit var trackImg: ImageView
     private lateinit var trackName: TextView
     private lateinit var trackArtist: TextView
@@ -34,7 +35,7 @@ class PlayerActivity: AppCompatActivity() {
 
     private var track: Track? = null
     private var mediaPlayer = MediaPlayer()
-    private var playerState = STATE_DEFAULT
+    private var playerState: PlayerState = PlayerState.DEFAULT
 
     private var mainThreadHandler: Handler? = null
 
@@ -138,12 +139,12 @@ class PlayerActivity: AppCompatActivity() {
         mediaPlayer.prepareAsync()
         // Завершение подготовки
         mediaPlayer.setOnPreparedListener {
-            playerState = STATE_PREPARED
+            playerState = PlayerState.PREPARED
         }
         // Завершение воспроизведения
         mediaPlayer.setOnCompletionListener {
             playerControl.setImageResource(R.drawable.button_play)
-            playerState = STATE_PREPARED
+            playerState = PlayerState.PREPARED
             stopProgress()
             setTimerText(0)
         }
@@ -155,26 +156,23 @@ class PlayerActivity: AppCompatActivity() {
 
     private fun playbackControl() {
         when(playerState) {
-            STATE_PLAYING -> {
-                pausePlayer()
-            }
-            STATE_PREPARED, STATE_PAUSED -> {
-                startPlayer()
-            }
+            PlayerState.PLAYING -> pausePlayer()
+            PlayerState.PREPARED, PlayerState.PAUSED -> startPlayer()
+            else -> {}
         }
     }
 
     private fun startPlayer() {
         mediaPlayer.start()
         playerControl.setImageResource(R.drawable.button_stop)
-        playerState = STATE_PLAYING
+        playerState = PlayerState.PLAYING
         startProgress()
     }
 
     private fun pausePlayer() {
         mediaPlayer.pause()
         playerControl.setImageResource(R.drawable.button_play)
-        playerState = STATE_PAUSED
+        playerState = PlayerState.PAUSED
 
         stopProgress()
     }
@@ -202,10 +200,6 @@ class PlayerActivity: AppCompatActivity() {
 
     companion object {
         const val EXTRA_TRACK_KEY = "extra_track"
-        private const val STATE_DEFAULT = 0
-        private const val STATE_PREPARED = 1
-        private const val STATE_PLAYING = 2
-        private const val STATE_PAUSED = 3
 
         private const val DELAY_UPDATE_PROGRESS = 500L
     }

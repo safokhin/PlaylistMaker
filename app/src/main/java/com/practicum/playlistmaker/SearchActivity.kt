@@ -213,13 +213,13 @@ class SearchActivity : AppCompatActivity() {
 
     /** Поиск треков */
     private fun findTrack(str: String) {
+        hiddenPlaceholders()
         progressBarView.visibility = View.VISIBLE
         trackAdapter.setList(mutableListOf())
 
         itunesApiService.findTrack(str).enqueue(object: Callback<TrackResponse> {
             @SuppressLint("NotifyDataSetChanged")
             override fun onResponse(call: Call<TrackResponse>, response: Response<TrackResponse>) {
-                hiddenPlaceholders()
                 progressBarView.visibility = View.GONE
 
                 if(response.code() == 200) {
