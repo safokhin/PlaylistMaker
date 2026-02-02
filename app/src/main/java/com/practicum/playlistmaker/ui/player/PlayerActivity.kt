@@ -1,10 +1,9 @@
-package com.practicum.playlistmaker
+package com.practicum.playlistmaker.ui.player
 
 import android.media.MediaPlayer
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
-import android.util.Log
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
@@ -16,7 +15,9 @@ import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
-import com.practicum.playlistmaker.utils.dpToPx
+import com.practicum.playlistmaker.R
+import com.practicum.playlistmaker.domain.models.Track
+import com.practicum.playlistmaker.data.utils.dpToPx
 import java.text.SimpleDateFormat
 import java.util.Locale
 
@@ -100,7 +101,7 @@ class PlayerActivity: AppCompatActivity() {
 
         trackName.text = trackData.trackName
         trackArtist.text = trackData.artistName
-        trackDuration.text = SimpleDateFormat("mm:ss", Locale.getDefault()).format(trackData.trackTimeMillis)
+        trackDuration.text = trackData.trackTime
         trackAlbum.text = trackData.collectionName
         trackYear.text = parseYear(trackData.releaseDate ?: "")
         trackGenre.text = trackData.primaryGenreName
@@ -155,7 +156,7 @@ class PlayerActivity: AppCompatActivity() {
     }
 
     private fun playbackControl() {
-        when(playerState) {
+        when (playerState) {
             PlayerState.PLAYING -> pausePlayer()
             PlayerState.PREPARED, PlayerState.PAUSED -> startPlayer()
             else -> {}

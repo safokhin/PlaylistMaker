@@ -1,15 +1,17 @@
-package com.practicum.playlistmaker
+package com.practicum.playlistmaker.ui.settings
 
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Button
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.net.toUri
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.google.android.material.appbar.MaterialToolbar
-import androidx.core.net.toUri
 import com.google.android.material.switchmaterial.SwitchMaterial
+import com.practicum.playlistmaker.Creator
+import com.practicum.playlistmaker.R
 
 class SettingsActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -21,6 +23,8 @@ class SettingsActivity : AppCompatActivity() {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
+
+        val settingsInteractor = Creator.provideSettingsInteractor(this)
 
         findViewById<MaterialToolbar>(R.id.btn_back).setNavigationOnClickListener {
             finish()
@@ -48,9 +52,9 @@ class SettingsActivity : AppCompatActivity() {
         }
 
         val switcherTheme = findViewById<SwitchMaterial>(R.id.switcherTheme)
-        switcherTheme.isChecked = (applicationContext as App).themeStorage.isDarkTheme()
+        switcherTheme.isChecked = settingsInteractor.isDarkTheme()
         switcherTheme.setOnCheckedChangeListener { switcher, checked ->
-            (applicationContext as App).themeStorage.setTheme(checked)
+            settingsInteractor.setDarkTheme(checked)
         }
     }
 }
