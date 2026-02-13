@@ -1,5 +1,7 @@
 package com.practicum.playlistmaker.settings.ui
 
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewmodel.initializer
@@ -31,6 +33,9 @@ class SettingsViewModel(
         }
     }
 
+    private val isDarkLiveData = MutableLiveData(settingsInteractor.isDarkTheme())
+    fun observeIsDark(): LiveData<Boolean> = isDarkLiveData
+
     fun shareApp() {
         sharingInteractor.shareApp()
     }
@@ -44,10 +49,7 @@ class SettingsViewModel(
     }
 
     fun setDarkTheme(isDark: Boolean) {
+        isDarkLiveData.postValue(isDark)
         settingsInteractor.setDarkTheme(isDark)
-    }
-
-    fun isDarkTheme(): Boolean {
-        return settingsInteractor.isDarkTheme()
     }
 }

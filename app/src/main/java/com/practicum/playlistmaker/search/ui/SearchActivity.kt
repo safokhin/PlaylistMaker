@@ -17,6 +17,7 @@ import androidx.core.view.isVisible
 import androidx.lifecycle.ViewModelProvider
 import com.google.gson.Gson
 import com.practicum.playlistmaker.R
+import com.practicum.playlistmaker.creator.Creator
 import com.practicum.playlistmaker.databinding.ActivitySearchBinding
 import com.practicum.playlistmaker.player.ui.PlayerActivity
 import com.practicum.playlistmaker.search.domain.models.Track
@@ -46,7 +47,10 @@ class SearchActivity : AppCompatActivity() {
 
         val inputMethodManager = getSystemService(INPUT_METHOD_SERVICE) as? InputMethodManager
 
-        viewModel = ViewModelProvider(this, SearchViewModel.getFactory())
+        viewModel = ViewModelProvider(this, SearchViewModel.getFactory(
+            Creator.provideTracksSearchInteractor(),
+            Creator.provideTracksHistoryInteractor(this)
+        ))
             .get(SearchViewModel::class.java)
 
         viewModel.observeSearchActivity().observe(this) {

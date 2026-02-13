@@ -31,22 +31,16 @@ class PlayerActivity: AppCompatActivity() {
             insets
         }
 
-        viewModel = ViewModelProvider(this, PlayerViewModel.getFactory(getTrack()))
+        val track = getTrack()
+
+        viewModel = ViewModelProvider(this, PlayerViewModel.getFactory(track))
             .get(PlayerViewModel::class.java)
 
 
-        // Изменение состояния плеера
-        viewModel.observePlayerState().observe(this) {
-            changePlayerIcon(it == PlayerViewModel.STATE_PLAYING)
-            enableButton(it != PlayerViewModel.STATE_DEFAULT)
-        }
-
-        viewModel.observeProgressTime().observe(this) {
-            binding.timePlayer.text = it
-        }
-
-        viewModel.observeTrack().observe(this) {
-            setTrackData(it)
+        viewModel.observePlayer().observe(this) {
+            changePlayerIcon(it.isPlay)
+            enableButton(!it.disableButton)
+            binding.timePlayer.text = it.progressTime
         }
 
         binding.playerControl.setOnClickListener {
@@ -56,6 +50,8 @@ class PlayerActivity: AppCompatActivity() {
         binding.btnBack.setNavigationOnClickListener {
             finish()
         }
+
+        setTrackData(track)
     }
 
     override fun onPause() {
@@ -89,8 +85,8 @@ class PlayerActivity: AppCompatActivity() {
     }
 
     /** Отрисовка кнопки */
-    private fun changePlayerIcon(isPlaying: Boolean) {
-        if(isPlaying) {
+    private fun changePlayerIcon(isPlay: Boolean) {
+        if(isPlay) {
             binding.playerControl.setImageResource(R.drawable.button_stop)
         } else {
             binding.playerControl.setImageResource(R.drawable.button_play)

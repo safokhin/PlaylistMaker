@@ -11,7 +11,7 @@ import com.practicum.playlistmaker.databinding.ActivitySettingsBinding
 
 class SettingsActivity : AppCompatActivity() {
     private lateinit var binding: ActivitySettingsBinding
-    private var viewModel: SettingsViewModel? = null
+    private lateinit var viewModel: SettingsViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -27,27 +27,28 @@ class SettingsActivity : AppCompatActivity() {
         viewModel = ViewModelProvider(this, SettingsViewModel.getFactory())
             .get(SettingsViewModel::class.java)
 
+        viewModel.observeIsDark().observe(this) {
+            binding.switcherTheme.isChecked = it
+        }
+
         binding.btnBack.setNavigationOnClickListener {
             finish()
         }
 
         binding.btnShare.setOnClickListener {
-            viewModel?.shareApp()
+            viewModel.shareApp()
         }
 
         binding.btnSupport.setOnClickListener {
-            viewModel?.openSupport()
+            viewModel.openSupport()
         }
 
         binding.btnAgree.setOnClickListener {
-            viewModel?.openTerms()
+            viewModel.openTerms()
         }
 
-
-        val switcherTheme = binding.switcherTheme
-        switcherTheme.isChecked = viewModel?.isDarkTheme() ?: false
-        switcherTheme.setOnCheckedChangeListener { switcher, checked ->
-            viewModel?.setDarkTheme(checked)
+        binding.switcherTheme.setOnCheckedChangeListener { switcher, checked ->
+            viewModel.setDarkTheme(checked)
         }
     }
 }

@@ -1,6 +1,5 @@
 package com.practicum.playlistmaker.search.ui
 
-import android.content.Context
 import android.os.Handler
 import android.os.Looper
 import android.os.SystemClock
@@ -11,18 +10,22 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
-import com.practicum.playlistmaker.PlaylistMakerApp
-import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.APPLICATION_KEY
-import com.practicum.playlistmaker.creator.Creator
+import com.practicum.playlistmaker.search.domain.api.TracksHistoryInteractor
+import com.practicum.playlistmaker.search.domain.api.TracksSearchInteractor
 import com.practicum.playlistmaker.search.domain.models.SearchActivityState
 import com.practicum.playlistmaker.search.domain.models.Track
 
-class SearchViewModel(private val context: Context): ViewModel() {
+class SearchViewModel(
+    private val tracksSearchInteractor: TracksSearchInteractor,
+    private val tracksHistoryInteractor: TracksHistoryInteractor
+): ViewModel() {
     companion object {
-        fun getFactory(): ViewModelProvider.Factory = viewModelFactory {
+        fun getFactory(
+            tracksSearchInteractor: TracksSearchInteractor,
+            tracksHistoryInteractor: TracksHistoryInteractor
+        ): ViewModelProvider.Factory = viewModelFactory {
             initializer {
-                val app = (this[APPLICATION_KEY] as PlaylistMakerApp)
-                SearchViewModel(app)
+                SearchViewModel(tracksSearchInteractor, tracksHistoryInteractor)
             }
         }
 
@@ -32,9 +35,6 @@ class SearchViewModel(private val context: Context): ViewModel() {
 
     private val activityStateLiveData = MutableLiveData<SearchActivityState>()
     fun observeSearchActivity(): LiveData<SearchActivityState> = activityStateLiveData
-
-    private var tracksSearchInteractor = Creator.provideTracksSearchInteractor()
-    private var tracksHistoryInteractor = Creator.provideTracksHistoryInteractor(context)
 
     private val handler = Handler(Looper.getMainLooper())
     private var latestSearchQuery: String? = null
