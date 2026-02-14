@@ -9,17 +9,15 @@ import com.practicum.playlistmaker.settings.domain.api.SettingsRepository
 import org.koin.dsl.module
 
 val repositoryModule = module {
-    single<SettingsRepository> {
+    factory<SettingsRepository> {
         SettingsRepositoryImpl(get())
     }
 
-    single<TracksHistoryRepository> {
-        TracksHistoryRepositoryImpl(get())
+    factory<TracksHistoryRepository> {
+        TracksHistoryRepositoryImpl(get(), get())
     }
 
-    single<TracksSearchRepository> {
+    factory<TracksSearchRepository> {
         TracksSearchRepositoryImpl(get())
     }
 }
-
-// ExternalNavigatorRepositoryImpl

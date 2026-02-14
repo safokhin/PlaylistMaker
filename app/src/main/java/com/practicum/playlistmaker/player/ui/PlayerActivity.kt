@@ -13,12 +13,14 @@ import com.practicum.playlistmaker.R
 import com.practicum.playlistmaker.databinding.ActivityPlayerBinding
 import com.practicum.playlistmaker.search.domain.models.Track
 import com.practicum.playlistmaker.utils.Converter
+import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
 
 class PlayerActivity: AppCompatActivity() {
     private lateinit var binding: ActivityPlayerBinding
 
+    private val gson: Gson by inject()
     private val viewModel: PlayerViewModel by viewModel {
         parametersOf(getTrack())
     }
@@ -59,7 +61,7 @@ class PlayerActivity: AppCompatActivity() {
     }
 
     private fun getTrack(): Track {
-        return Gson().fromJson(intent.getStringExtra(EXTRA_TRACK_KEY), Track::class.java)
+        return gson.fromJson(intent.getStringExtra(EXTRA_TRACK_KEY), Track::class.java)
     }
 
     private fun setTrackData(track: Track) {

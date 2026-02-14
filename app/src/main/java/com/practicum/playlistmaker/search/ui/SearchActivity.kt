@@ -20,11 +20,14 @@ import com.practicum.playlistmaker.databinding.ActivitySearchBinding
 import com.practicum.playlistmaker.player.ui.PlayerActivity
 import com.practicum.playlistmaker.search.domain.models.Track
 import com.practicum.playlistmaker.search.domain.models.SearchActivityState
+import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
+import kotlin.getValue
 
 class SearchActivity : AppCompatActivity() {
     private lateinit var binding: ActivitySearchBinding
 
+    private val gson: Gson by inject()
     private val viewModel by viewModel<SearchViewModel>()
     private var isClickAllowed = true
     private val handler = Handler(Looper.getMainLooper())
@@ -94,7 +97,7 @@ class SearchActivity : AppCompatActivity() {
 
             // Переход на страницу плеера + передача информации
             val intent = Intent(this, PlayerActivity::class.java)
-            intent.putExtra(PlayerActivity.EXTRA_TRACK_KEY, Gson().toJson(track))
+            intent.putExtra(PlayerActivity.EXTRA_TRACK_KEY, gson.toJson(track))
             startActivity(intent)
         }
     }

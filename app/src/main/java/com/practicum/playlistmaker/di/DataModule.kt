@@ -1,6 +1,7 @@
 package com.practicum.playlistmaker.di
 
 import android.content.Context
+import android.media.MediaPlayer
 import com.google.gson.Gson
 import com.practicum.playlistmaker.search.data.network.ItunesApiService
 import com.practicum.playlistmaker.settings.data.ExternalNavigator
@@ -23,6 +24,8 @@ val dataModule = module {
     }
 
     factory { Gson() }
+
+    factory { MediaPlayer() }
 
     single {
         ExternalNavigator(androidContext())

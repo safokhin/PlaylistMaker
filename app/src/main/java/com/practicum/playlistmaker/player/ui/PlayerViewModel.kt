@@ -10,15 +10,16 @@ import com.practicum.playlistmaker.search.domain.models.Track
 import java.text.SimpleDateFormat
 import java.util.Locale
 
-class PlayerViewModel(private val track: Track): ViewModel() {
+class PlayerViewModel(
+    private val track: Track,
+    private val mediaPlayer: MediaPlayer
+): ViewModel() {
     companion object {
         private const val DELAY_UPDATE_PROGRESS = 500L
     }
 
     private val playerLiveData = MutableLiveData<PlayerState>(PlayerState.Default())
     fun observePlayer(): LiveData<PlayerState> = playerLiveData
-
-    private var mediaPlayer = MediaPlayer()
 
     private var handler = Handler(Looper.getMainLooper())
 
