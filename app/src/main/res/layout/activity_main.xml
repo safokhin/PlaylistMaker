@@ -7,7 +7,7 @@
     android:layout_height="match_parent"
     android:background="@color/activity_main_background"
     android:orientation="vertical"
-    tools:context=".ui.main.MainActivity">
+    tools:context=".main.ui.MainActivity">
 
     <com.google.android.material.appbar.MaterialToolbar
         android:layout_width="match_parent"
@@ -24,21 +24,21 @@
         android:layout_marginHorizontal="@dimen/spacing_sm">
 
         <Button
-            android:id="@+id/search_button"
+            android:id="@+id/btn_search"
             style="@style/ButtonMainActivity"
             android:text="@string/search"
             android:layout_marginBottom="@dimen/spacing_sm"
             app:icon="@drawable/search_icon" />
 
         <Button
-            android:id="@+id/media_button"
+            android:id="@+id/btn_media"
             style="@style/ButtonMainActivity"
             android:text="@string/media_library"
             android:layout_marginBottom="@dimen/spacing_sm"
             app:icon="@drawable/media_icon" />
 
         <Button
-            android:id="@+id/settings_button"
+            android:id="@+id/btn_settings"
             style="@style/ButtonMainActivity"
             android:text="@string/settings"
             app:icon="@drawable/settings_icon" />

@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:background="@color/blue"
-    tools:context=".ui.mediaLibrary.MediaLibraryActivity">
+    tools:context=".media_library.ui.MediaLibraryActivity">
 
     <TextView
         android:layout_width="match_parent"
