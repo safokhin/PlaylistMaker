@@ -1,11 +1,11 @@
 package com.practicum.playlistmaker.player.ui
 
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
-import androidx.lifecycle.ViewModelProvider
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.google.gson.Gson
@@ -13,12 +13,15 @@ import com.practicum.playlistmaker.R
 import com.practicum.playlistmaker.databinding.ActivityPlayerBinding
 import com.practicum.playlistmaker.search.domain.models.Track
 import com.practicum.playlistmaker.utils.Converter
+import org.koin.androidx.viewmodel.ext.android.viewModel
+import org.koin.core.parameter.parametersOf
 
 class PlayerActivity: AppCompatActivity() {
     private lateinit var binding: ActivityPlayerBinding
 
-    private lateinit var viewModel: PlayerViewModel
-
+    private val viewModel: PlayerViewModel by viewModel {
+        parametersOf(getTrack())
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -32,10 +35,6 @@ class PlayerActivity: AppCompatActivity() {
         }
 
         val track = getTrack()
-
-        viewModel = ViewModelProvider(this, PlayerViewModel.getFactory(track))
-            .get(PlayerViewModel::class.java)
-
 
         viewModel.observePlayer().observe(this) {
             changePlayerIcon(it.isPlay)
