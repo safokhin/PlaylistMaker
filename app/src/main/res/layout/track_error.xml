@@ -3,6 +3,7 @@
     android:id="@+id/placeholderError"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:layout_marginTop="102dp"
     style="@style/Placeholder">
 
     <ImageView
