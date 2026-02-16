@@ -8,11 +8,11 @@ import com.practicum.playlistmaker.search.domain.api.TracksHistoryRepository
 import com.practicum.playlistmaker.search.domain.models.Track
 
 class TracksHistoryRepositoryImpl(
+    private val gson: Gson,
     context: Context
 ): TracksHistoryRepository {
     private val tokenType = object : TypeToken<List<Track>>() {}.type
     private val sharedPreferences = context.getSharedPreferences(SHARED_PREFS_FILE, Context.MODE_PRIVATE)
-    private val gson = Gson()
 
     override fun addHistory(track: Track) {
         val history = ArrayList(getHistory().filter { it.trackId != track.trackId })

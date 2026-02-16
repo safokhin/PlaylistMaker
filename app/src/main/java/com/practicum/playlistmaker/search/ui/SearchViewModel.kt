@@ -7,9 +7,6 @@ import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.viewmodel.initializer
-import androidx.lifecycle.viewmodel.viewModelFactory
 import com.practicum.playlistmaker.search.domain.api.TracksHistoryInteractor
 import com.practicum.playlistmaker.search.domain.api.TracksSearchInteractor
 import com.practicum.playlistmaker.search.domain.models.SearchActivityState
@@ -20,15 +17,6 @@ class SearchViewModel(
     private val tracksHistoryInteractor: TracksHistoryInteractor
 ): ViewModel() {
     companion object {
-        fun getFactory(
-            tracksSearchInteractor: TracksSearchInteractor,
-            tracksHistoryInteractor: TracksHistoryInteractor
-        ): ViewModelProvider.Factory = viewModelFactory {
-            initializer {
-                SearchViewModel(tracksSearchInteractor, tracksHistoryInteractor)
-            }
-        }
-
         private const val SEARCH_DEBOUNCE_DELAY = 2000L
         private val TOKEN_SEARCH = Any()
     }

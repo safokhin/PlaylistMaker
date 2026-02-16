@@ -14,20 +14,21 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.isVisible
-import androidx.lifecycle.ViewModelProvider
 import com.google.gson.Gson
 import com.practicum.playlistmaker.R
-import com.practicum.playlistmaker.creator.Creator
 import com.practicum.playlistmaker.databinding.ActivitySearchBinding
 import com.practicum.playlistmaker.player.ui.PlayerActivity
 import com.practicum.playlistmaker.search.domain.models.Track
 import com.practicum.playlistmaker.search.domain.models.SearchActivityState
+import org.koin.android.ext.android.inject
+import org.koin.androidx.viewmodel.ext.android.viewModel
+import kotlin.getValue
 
 class SearchActivity : AppCompatActivity() {
     private lateinit var binding: ActivitySearchBinding
 
-    private lateinit var viewModel: SearchViewModel
-
+    private val gson: Gson by inject()
+    private val viewModel by viewModel<SearchViewModel>()
     private var isClickAllowed = true
     private val handler = Handler(Looper.getMainLooper())
 
@@ -46,12 +47,6 @@ class SearchActivity : AppCompatActivity() {
         }
 
         val inputMethodManager = getSystemService(INPUT_METHOD_SERVICE) as? InputMethodManager
-
-        viewModel = ViewModelProvider(this, SearchViewModel.getFactory(
-            Creator.provideTracksSearchInteractor(),
-            Creator.provideTracksHistoryInteractor(this)
-        ))
-            .get(SearchViewModel::class.java)
 
         viewModel.observeSearchActivity().observe(this) {
             renderActivity(it)
@@ -102,7 +97,7 @@ class SearchActivity : AppCompatActivity() {
 
             // Переход на страницу плеера + передача информации
             val intent = Intent(this, PlayerActivity::class.java)
-            intent.putExtra(PlayerActivity.EXTRA_TRACK_KEY, Gson().toJson(track))
+            intent.putExtra(PlayerActivity.EXTRA_TRACK_KEY, gson.toJson(track))
             startActivity(intent)
         }
     }
