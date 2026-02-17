@@ -1,23 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="@color/blue"
-    tools:context=".media_library.ui.MediaLibraryActivity">
+    android:background="@color/activity_background">
 
-    <TextView
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/btn_back"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_gravity="center"
-        android:gravity="center"
-        android:text="@string/media_library_activity"
-        android:textColor="@color/white"
-        android:textSize="@dimen/text_size_xl"
-        android:textFontWeight="500" />
+        android:layout_height="@dimen/toolbar_height"
+        app:contentInsetStartWithNavigation="0dp"
+        app:navigationIconTint="?attr/colorPrimary"
+        app:navigationIcon="@drawable/arrow_left_icon"
+        app:title="@string/media_library" />
+
+    <com.google.android.material.tabs.TabLayout
+        android:id="@+id/tabLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:tabTextAppearance="@style/MediaPlaylistsTabText"
+        style="@style/MediaPlaylistsTabLayout" />
+
+    <androidx.viewpager2.widget.ViewPager2
+        android:id="@+id/pager"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
 </LinearLayout>
-
-
-

@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/activity_background"
+    android:orientation="vertical"
+    android:gravity="center_horizontal">
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/clearTrackListHistory"
+        android:text="@string/new_playlists"
+        android:layout_marginTop="@dimen/spacing_md"
+        style="@style/PlaceholderButton" />
+
+    <LinearLayout
+        android:id="@+id/placeholderEmpty"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="46dp"
+        style="@style/Placeholder">
+
+        <ImageView
+            android:layout_width="120dp"
+            android:layout_height="120dp"
+            android:src="@drawable/empty_search"
+            style="@style/PlaceholderImage" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/not_created_playlists"
+            style="@style/PlaceholderText" />
+    </LinearLayout>
+</LinearLayout>
