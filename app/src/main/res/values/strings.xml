@@ -22,6 +22,8 @@
     <string name="media_library_empty">Ваша медиатека пуста</string>
     <string name="not_created_playlists">Вы не создали \nни одного плейлиста</string>
     <string name="new_playlists">Новый плейлист</string>
+    <string name="liked_tracks">Избранные треки</string>
+    <string name="playlists">Плейлисты</string>
 
     <string name="link_agree">https://yandex.ru/legal/practicum_offer/ru/</string>
     <string name="link_course">https://practicum.yandex.ru/android-developer/</string>

@@ -31,8 +31,8 @@ class MediaLibraryActivity : AppCompatActivity() {
         binding.pager.adapter = MediaLibraryAdapter(supportFragmentManager, lifecycle)
         tabMediator = TabLayoutMediator(binding.tabLayout, binding.pager) { tab, position ->
             when(position) {
-                0 -> tab.text = "Избранные треки"
-                1 -> tab.text = "Плейлисты"
+                0 -> tab.text = getString(R.string.liked_tracks)
+                1 -> tab.text = getString(R.string.playlists)
             }
         }
         tabMediator.attach()
