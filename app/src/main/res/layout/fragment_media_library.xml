@@ -1,19 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/main"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/mediaLibraryFragment"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="@color/activity_background">
+    android:background="@color/activity_background"
+    tools:context=".media_library.ui.MediaLibraryFragment">
 
     <com.google.android.material.appbar.MaterialToolbar
-        android:id="@+id/btn_back"
         android:layout_width="match_parent"
         android:layout_height="@dimen/toolbar_height"
         app:contentInsetStartWithNavigation="0dp"
-        app:navigationIconTint="?attr/colorPrimary"
-        app:navigationIcon="@drawable/arrow_left_icon"
         app:title="@string/media_library" />
 
     <com.google.android.material.tabs.TabLayout
