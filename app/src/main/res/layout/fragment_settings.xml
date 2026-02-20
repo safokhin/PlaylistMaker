@@ -2,21 +2,18 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/main"
+    android:id="@+id/settingsFragment"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/activity_background"
     android:orientation="vertical"
-    tools:context=".settings.ui.SettingsActivity">
+    tools:context=".settings.ui.SettingsFragment">
 
     <com.google.android.material.appbar.MaterialToolbar
-        android:id="@+id/btn_back"
         android:layout_width="match_parent"
         android:layout_height="@dimen/toolbar_height"
         android:layout_marginBottom="@dimen/spacing_md"
         app:contentInsetStartWithNavigation="0dp"
-        app:navigationIconTint="?attr/colorPrimary"
-        app:navigationIcon="@drawable/arrow_left_icon"
         app:title="@string/settings" />
 
     <LinearLayout

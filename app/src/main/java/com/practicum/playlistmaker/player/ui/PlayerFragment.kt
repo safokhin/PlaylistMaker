@@ -1,44 +1,52 @@
 package com.practicum.playlistmaker.player.ui
 
 import android.os.Bundle
-import android.util.Log
-import androidx.activity.enableEdgeToEdge
-import androidx.appcompat.app.AppCompatActivity
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
-import com.google.gson.Gson
 import com.practicum.playlistmaker.R
-import com.practicum.playlistmaker.databinding.ActivityPlayerBinding
+import com.practicum.playlistmaker.databinding.FragmentPlayerBinding
 import com.practicum.playlistmaker.search.domain.models.Track
 import com.practicum.playlistmaker.utils.Converter
-import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
+import kotlin.getValue
 
-class PlayerActivity: AppCompatActivity() {
-    private lateinit var binding: ActivityPlayerBinding
+class PlayerFragment : Fragment() {
+    private lateinit var binding: FragmentPlayerBinding
 
-    private val gson: Gson by inject()
     private val viewModel: PlayerViewModel by viewModel {
         parametersOf(getTrack())
     }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
-        binding = ActivityPlayerBinding.inflate(layoutInflater)
-        setContentView(binding.root)
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.player)) { v, insets ->
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        binding = FragmentPlayerBinding.inflate(inflater, container, false)
+
+        ViewCompat.setOnApplyWindowInsetsListener(binding.root) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
 
+        return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
         val track = getTrack()
 
-        viewModel.observePlayer().observe(this) {
+        viewModel.observePlayer().observe(viewLifecycleOwner) {
             changePlayerIcon(it.isPlay)
             enableButton(!it.disableButton)
             binding.timePlayer.text = it.progressTime
@@ -48,8 +56,8 @@ class PlayerActivity: AppCompatActivity() {
             viewModel.playbackControl()
         }
 
-        binding.btnBack.setNavigationOnClickListener {
-            finish()
+        binding.btnBack.setOnClickListener {
+            findNavController().popBackStack()
         }
 
         setTrackData(track)
@@ -61,7 +69,7 @@ class PlayerActivity: AppCompatActivity() {
     }
 
     private fun getTrack(): Track {
-        return gson.fromJson(intent.getStringExtra(EXTRA_TRACK_KEY), Track::class.java)
+        return requireArguments().getParcelable(EXTRA_TRACK_KEY)!!
     }
 
     private fun setTrackData(track: Track) {
@@ -78,10 +86,10 @@ class PlayerActivity: AppCompatActivity() {
 
         val roundedVal: Float = resources.getDimension(R.dimen.track_image_border_px)
 
-        Glide.with(this)
+        Glide.with(requireContext())
             .load(track.artworkUrl100.replaceAfterLast('/',"512x512bb.jpg"))
             .placeholder(R.drawable.track_placeholder_icon)
-            .transform(RoundedCorners(Converter.dpToPx(roundedVal, this)))
+            .transform(RoundedCorners(Converter.dpToPx(roundedVal, requireContext())))
             .into(binding.trackImg)
     }
 

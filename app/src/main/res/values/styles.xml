@@ -119,4 +119,18 @@
         <item name="android:textSize">@dimen/text_size_sm</item>
         <item name="android:textAllCaps">false</item>
     </style>
+    <style name="BottomNavigationStyleApp">
+        <item name="android:fontFamily">@font/ys_display_regular</item>
+        <item name="android:textSize">@dimen/text_size_xs</item>
+    </style>
+    <style name="BottomNavigationStyle">
+        <item name="itemIconTint">@color/bottom_nav</item>
+        <item name="itemTextColor">@color/bottom_nav</item>
+        <item name="backgroundTint">@color/activity_background</item>
+        <item name="itemIconSize">24dp</item>
+        <item name="itemTextAppearanceActiveBoldEnabled">false</item>
+        <item name="itemTextAppearance">@style/BottomNavigationStyleApp</item>
+        <item name="itemTextAppearanceInactive">@style/BottomNavigationStyleApp</item>
+        <item name="itemTextAppearanceActive">@style/BottomNavigationStyleApp</item>
+    </style>
 </resources>
