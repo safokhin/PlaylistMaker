@@ -1,33 +1,33 @@
 package com.practicum.playlistmaker.search.ui
 
-import android.content.Intent
+import android.content.Context.INPUT_METHOD_SERVICE
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
-import androidx.activity.enableEdgeToEdge
-import androidx.appcompat.app.AppCompatActivity
+import androidx.core.os.bundleOf
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.isVisible
-import com.google.gson.Gson
+import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
 import com.practicum.playlistmaker.R
-import com.practicum.playlistmaker.databinding.ActivitySearchBinding
-import com.practicum.playlistmaker.player.ui.PlayerActivity
+import com.practicum.playlistmaker.databinding.FragmentSearchBinding
+import com.practicum.playlistmaker.player.ui.PlayerFragment
 import com.practicum.playlistmaker.search.domain.models.Track
 import com.practicum.playlistmaker.search.domain.models.SearchActivityState
-import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import kotlin.getValue
 
-class SearchActivity : AppCompatActivity() {
-    private lateinit var binding: ActivitySearchBinding
+class SearchFragment : Fragment() {
 
-    private val gson: Gson by inject()
+    private lateinit var binding: FragmentSearchBinding
     private val viewModel by viewModel<SearchViewModel>()
     private var isClickAllowed = true
     private val handler = Handler(Looper.getMainLooper())
@@ -35,18 +35,26 @@ class SearchActivity : AppCompatActivity() {
     private var trackAdapter = TrackAdapter { selectTrackHandler(it) }
     private var trackHistoryAdapter = TrackAdapter { selectTrackHandler(it) }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
-        binding = ActivitySearchBinding.inflate(layoutInflater)
-        setContentView(binding.root)
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        binding = FragmentSearchBinding.inflate(inflater, container, false)
+
+        ViewCompat.setOnApplyWindowInsetsListener(binding.root) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
 
-        val inputMethodManager = getSystemService(INPUT_METHOD_SERVICE) as? InputMethodManager
+        return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        val inputMethodManager = requireContext().getSystemService(INPUT_METHOD_SERVICE) as? InputMethodManager
 
         viewModel.observeSearchActivity().observe(this) {
             renderActivity(it)
@@ -54,8 +62,6 @@ class SearchActivity : AppCompatActivity() {
 
         searchInputInit()
 
-        // Обработчик клика кнопки "Назад"
-        binding.btnBack.setNavigationOnClickListener { finish() }
         // Обработчик клика кнопки "Очистить поиск"
         binding.btnClear.setOnClickListener {
             binding.editTextSearch.setText("")
@@ -68,7 +74,6 @@ class SearchActivity : AppCompatActivity() {
             viewModel.searchTrackDebounce(binding.editTextSearch.text.toString(), true)
         }
 
-
         binding.recyclerTrackList.adapter = trackAdapter
 
         binding.tracksHistory.recyclerTrackListHistory.adapter = trackHistoryAdapter
@@ -76,10 +81,6 @@ class SearchActivity : AppCompatActivity() {
 
         // Фокусировка при открытии окна
         binding.editTextSearch.requestFocus()
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
     }
 
     override fun onResume() {
@@ -95,10 +96,8 @@ class SearchActivity : AppCompatActivity() {
         if (clickDebounce()) {
             viewModel.addHistory(track)
 
-            // Переход на страницу плеера + передача информации
-            val intent = Intent(this, PlayerActivity::class.java)
-            intent.putExtra(PlayerActivity.EXTRA_TRACK_KEY, gson.toJson(track))
-            startActivity(intent)
+            findNavController().navigate(R.id.action_searchFragment_to_playerFragment,
+                bundleOf(PlayerFragment.EXTRA_TRACK_KEY to track))
         }
     }
 
@@ -163,7 +162,6 @@ class SearchActivity : AppCompatActivity() {
             recyclerTrackList.visibility = View.GONE
         }
     }
-
 
     /** Отображение пустого списка */
     private fun showPlaceholderEmpty() {
