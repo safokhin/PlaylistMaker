@@ -1,12 +1,14 @@
 package com.practicum.playlistmaker.player.ui
 
 import android.media.MediaPlayer
-import android.os.Handler
-import android.os.Looper
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.practicum.playlistmaker.search.domain.models.Track
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Locale
 
@@ -15,19 +17,12 @@ class PlayerViewModel(
     private val mediaPlayer: MediaPlayer
 ): ViewModel() {
     companion object {
-        private const val DELAY_UPDATE_PROGRESS = 500L
+        private const val DELAY_UPDATE_PROGRESS = 300L
     }
 
     private val playerLiveData = MutableLiveData<PlayerState>(PlayerState.Default())
     fun observePlayer(): LiveData<PlayerState> = playerLiveData
-
-    private var handler = Handler(Looper.getMainLooper())
-
-    private val timerRunnable = Runnable {
-        if(playerLiveData.value?.isPlay == true) {
-            startTimerUpdate()
-        }
-    }
+    private var timerJob: Job? = null
 
     init {
         preparePlayer()
@@ -71,7 +66,7 @@ class PlayerViewModel(
     }
 
     private fun pausePlayer() {
-        handler.removeCallbacks(timerRunnable)
+        timerJob?.cancel()
         mediaPlayer.pause()
         playerLiveData.postValue(PlayerState.Paused(getProgressTime()))
     }
@@ -79,12 +74,18 @@ class PlayerViewModel(
     /** Обновление таймера трека */
     private fun startTimerUpdate() {
         playerLiveData.postValue(PlayerState.Playing(getProgressTime()))
-        handler.postDelayed(timerRunnable, DELAY_UPDATE_PROGRESS)
+        timerJob = viewModelScope.launch {
+            while (mediaPlayer.isPlaying) {
+                delay(DELAY_UPDATE_PROGRESS)
+                playerLiveData.postValue(PlayerState.Playing(getProgressTime()))
+            }
+        }
+
     }
 
     private fun resetTimer() {
         playerLiveData.postValue(PlayerState.Prepared())
-        handler.removeCallbacks(timerRunnable)
+        timerJob?.cancel()
     }
 
     private fun getProgressTime(): String {

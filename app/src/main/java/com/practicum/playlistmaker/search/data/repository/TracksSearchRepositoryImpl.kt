@@ -1,53 +1,46 @@
 package com.practicum.playlistmaker.search.data.repository
 
-import com.practicum.playlistmaker.search.data.dto.TrackSearchResponse
 import com.practicum.playlistmaker.search.data.network.ItunesApiService
 import com.practicum.playlistmaker.search.domain.api.TracksSearchRepository
 import com.practicum.playlistmaker.search.domain.models.Track
 import com.practicum.playlistmaker.utils.Converter
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 import java.text.SimpleDateFormat
 import java.util.Locale
+import kotlin.coroutines.cancellation.CancellationException
 
 class TracksSearchRepositoryImpl(private val api: ItunesApiService): TracksSearchRepository {
 
     /** Получение данных с сервера и преобразование в domain.models.Track */
-    override fun searchTracks(expression: String, callback: (Result<List<Track>>) -> Unit) {
-        api.findTracks(expression).enqueue(object : Callback<TrackSearchResponse> {
-            override fun onResponse(
-                call: Call<TrackSearchResponse?>,
-                response: Response<TrackSearchResponse?>
-            ) {
-                if(response.code() == 200) {
-                    val convertTracks = response.body()?.results?.map {
-                        Track(
-                            trackId = it.trackId,
-                            trackName = it.trackName,
-                            artistName = it.artistName,
-                            artworkUrl100 = it.artworkUrl100,
-                            collectionName = it.collectionName,
-                            releaseYear = Converter.dateToYear(it.releaseDate),
-                            primaryGenreName = it.primaryGenreName,
-                            country = it.country,
-                            previewUrl = it.previewUrl,
-                            trackTime = SimpleDateFormat("mm:ss", Locale.getDefault()).format(it.trackTimeMillis)
-                        )
-                    }.orEmpty()
+    override fun searchTracks(expression: String): Flow<Result<List<Track>>> = flow {
+        try {
+            val response = api.findTracks(expression)
 
-                    callback(Result.success(convertTracks))
-                } else {
-                    callback(Result.failure(Exception("Ошибка ${response.code()}")))
-                }
+            if(response.code() == 200) {
+                val convertTracks = response.body()?.results?.map {
+                    Track(
+                        trackId = it.trackId,
+                        trackName = it.trackName,
+                        artistName = it.artistName,
+                        artworkUrl100 = it.artworkUrl100,
+                        collectionName = it.collectionName,
+                        releaseYear = Converter.dateToYear(it.releaseDate),
+                        primaryGenreName = it.primaryGenreName,
+                        country = it.country,
+                        previewUrl = it.previewUrl,
+                        trackTime = SimpleDateFormat("mm:ss", Locale.getDefault()).format(it.trackTimeMillis)
+                    )
+                }.orEmpty()
+
+                emit(Result.success(convertTracks))
+            } else {
+                emit(Result.failure(Exception("Ошибка ${response.code()}")))
             }
 
-            override fun onFailure(
-                call: Call<TrackSearchResponse?>,
-                t: Throwable
-            ) {
-                callback(Result.failure(t))
-            }
-        })
+        } catch (e: Exception) {
+            if (e is CancellationException) throw e
+            emit(Result.failure(e))
+        }
     }
 }

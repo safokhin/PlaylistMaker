@@ -1,16 +1,17 @@
 package com.practicum.playlistmaker.search.ui
 
-import android.os.Handler
-import android.os.Looper
-import android.os.SystemClock
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.practicum.playlistmaker.search.domain.api.TracksHistoryInteractor
 import com.practicum.playlistmaker.search.domain.api.TracksSearchInteractor
 import com.practicum.playlistmaker.search.domain.models.SearchActivityState
 import com.practicum.playlistmaker.search.domain.models.Track
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 class SearchViewModel(
     private val tracksSearchInteractor: TracksSearchInteractor,
@@ -18,14 +19,13 @@ class SearchViewModel(
 ): ViewModel() {
     companion object {
         private const val SEARCH_DEBOUNCE_DELAY = 2000L
-        private val TOKEN_SEARCH = Any()
     }
 
     private val activityStateLiveData = MutableLiveData<SearchActivityState>()
     fun observeSearchActivity(): LiveData<SearchActivityState> = activityStateLiveData
-
-    private val handler = Handler(Looper.getMainLooper())
     private var latestSearchQuery: String? = null
+
+    private var searchJob: Job? = null
 
     /** Отображение истории */
     fun loadHistory() {
@@ -50,9 +50,6 @@ class SearchViewModel(
     }
 
     fun searchTrackDebounce(query: String, isError: Boolean = false) {
-        // Очищаем сразу предыдущий запрос
-        handler.removeCallbacksAndMessages(TOKEN_SEARCH)
-
         if(query.isEmpty()) {
             latestSearchQuery = ""
             return
@@ -62,25 +59,31 @@ class SearchViewModel(
         if(latestSearchQuery == query && !isError) return
         latestSearchQuery = query
 
-        val searchRunnable = Runnable { searchTracks(query) }
-        val postTime = SystemClock.uptimeMillis() + SEARCH_DEBOUNCE_DELAY
-        handler.postAtTime(searchRunnable, TOKEN_SEARCH, postTime)
+        searchJob?.cancel()
+        searchJob = viewModelScope.launch {
+            delay(SEARCH_DEBOUNCE_DELAY)
+            searchTracks(query)
+        }
     }
 
     private fun searchTracks(query: String) {
         activityStateLiveData.postValue(SearchActivityState.Loading)
 
-        tracksSearchInteractor.searchTracks(query) { result ->
-
-            result.onSuccess { tracks ->
-                if(tracks.isEmpty()) {
-                    activityStateLiveData.postValue(SearchActivityState.Empty)
-                } else {
-                    activityStateLiveData.postValue(SearchActivityState.Content(tracks))
+        viewModelScope.launch {
+            tracksSearchInteractor
+                .searchTracks(query)
+                .collect { result ->
+                    result.onSuccess { tracks ->
+                        if(tracks.isEmpty()) {
+                            activityStateLiveData.postValue(SearchActivityState.Empty)
+                        } else {
+                            activityStateLiveData.postValue(SearchActivityState.Content(tracks))
+                        }
+                    }
+                    result.onFailure {
+                        activityStateLiveData.postValue(SearchActivityState.Error)
+                    }
                 }
-            }.onFailure {
-                activityStateLiveData.postValue(SearchActivityState.Error)
-            }
         }
     }
 }
