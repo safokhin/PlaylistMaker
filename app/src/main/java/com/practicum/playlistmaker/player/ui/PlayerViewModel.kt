@@ -23,11 +23,8 @@ class PlayerViewModel(
         private const val DELAY_UPDATE_PROGRESS = 300L
     }
 
-    private val playerLiveData = MutableLiveData<PlayerState>(PlayerState.Default())
+    private val playerLiveData = MutableLiveData<PlayerState>(PlayerState.Default(track))
     fun observePlayer(): LiveData<PlayerState> = playerLiveData
-
-    private val trackLiveData = MutableLiveData(track)
-    fun observeTrack(): LiveData<Track> = trackLiveData
 
     private var timerJob: Job? = null
 
@@ -40,7 +37,7 @@ class PlayerViewModel(
         viewModelScope.launch {
             favoritesInteractor.favoriteTrackById(track.trackId.toString()).collect {
                 if(it != null) {
-                    trackLiveData.postValue(trackLiveData.value!!.copy(isFavorite = true))
+                    updateTrackLiveData(playerLiveData.value!!.track.copy(isFavorite = true))
                 }
             }
         }
@@ -59,9 +56,8 @@ class PlayerViewModel(
     /** Обработка клика на "Добавление в избранное" */
     fun favoriteHandler() {
         viewModelScope.launch {
-            val updateTrack = trackLiveData.value!!.copy(isFavorite = !trackLiveData.value!!.isFavorite)
-            trackLiveData.postValue(updateTrack)
-
+            val updateTrack = playerLiveData.value!!.track.copy(isFavorite = !playerLiveData.value!!.track.isFavorite)
+            updateTrackLiveData(updateTrack)
 
             if (updateTrack.isFavorite) {
                 favoritesInteractor.addTrack(updateTrack)
@@ -85,7 +81,7 @@ class PlayerViewModel(
         mediaPlayer.prepareAsync()
         // Завершение подготовки
         mediaPlayer.setOnPreparedListener {
-            playerLiveData.postValue(PlayerState.Prepared())
+            playerLiveData.postValue(PlayerState.Prepared(playerLiveData.value!!.track))
         }
         // Завершение воспроизведения
         mediaPlayer.setOnCompletionListener {
@@ -101,27 +97,39 @@ class PlayerViewModel(
     private fun pausePlayer() {
         timerJob?.cancel()
         mediaPlayer.pause()
-        playerLiveData.postValue(PlayerState.Paused(getProgressTime()))
+        playerLiveData.postValue(PlayerState.Paused(getProgressTime(), playerLiveData.value!!.track))
     }
 
     /** Обновление таймера трека */
     private fun startTimerUpdate() {
-        playerLiveData.postValue(PlayerState.Playing(getProgressTime()))
+        playerLiveData.postValue(PlayerState.Playing(getProgressTime(), playerLiveData.value!!.track))
         timerJob = viewModelScope.launch {
             while (mediaPlayer.isPlaying) {
                 delay(DELAY_UPDATE_PROGRESS)
-                playerLiveData.postValue(PlayerState.Playing(getProgressTime()))
+                playerLiveData.postValue(PlayerState.Playing(getProgressTime(), playerLiveData.value!!.track))
             }
         }
 
     }
 
     private fun resetTimer() {
-        playerLiveData.postValue(PlayerState.Prepared())
+        playerLiveData.postValue(PlayerState.Prepared(playerLiveData.value!!.track))
         timerJob?.cancel()
     }
 
     private fun getProgressTime(): String {
         return SimpleDateFormat("mm:ss", Locale.getDefault()).format(mediaPlayer.currentPosition)
+    }
+
+    private fun updateTrackLiveData(track: Track) {
+        playerLiveData.postValue(
+            when(val state = playerLiveData.value) {
+                is PlayerState.Default -> PlayerState.Default(track)
+                is PlayerState.Prepared -> PlayerState.Prepared(track)
+                is PlayerState.Playing -> PlayerState.Playing(state.progressTime, track)
+                is PlayerState.Paused -> PlayerState.Paused(state.progressTime, track)
+                else -> state
+            }
+        )
     }
 }

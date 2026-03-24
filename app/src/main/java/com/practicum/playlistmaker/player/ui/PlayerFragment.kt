@@ -50,11 +50,8 @@ class PlayerFragment : Fragment() {
         viewModel.observePlayer().observe(viewLifecycleOwner) {
             changePlayerIcon(it.isPlay)
             enableButton(!it.disableButton)
+            changeFavoriteIcon(it.track.isFavorite)
             binding.timePlayer.text = it.progressTime
-        }
-
-        viewModel.observeTrack().observe(viewLifecycleOwner) {
-            changeFavoriteIcon(it.isFavorite)
         }
 
         binding.playerControl.setOnClickListener {
