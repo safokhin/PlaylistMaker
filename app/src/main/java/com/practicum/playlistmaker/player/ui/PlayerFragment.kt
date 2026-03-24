@@ -1,6 +1,7 @@
 package com.practicum.playlistmaker.player.ui
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -52,8 +53,16 @@ class PlayerFragment : Fragment() {
             binding.timePlayer.text = it.progressTime
         }
 
+        viewModel.observeTrack().observe(viewLifecycleOwner) {
+            changeFavoriteIcon(it.isFavorite)
+        }
+
         binding.playerControl.setOnClickListener {
             viewModel.playbackControl()
+        }
+
+        binding.favoriteButton.setOnClickListener {
+            viewModel.favoriteHandler()
         }
 
         binding.btnBack.setOnClickListener {
@@ -61,6 +70,7 @@ class PlayerFragment : Fragment() {
         }
 
         setTrackData(track)
+        viewModel.loadIsFavorite()
     }
 
     override fun onPause() {
@@ -99,6 +109,14 @@ class PlayerFragment : Fragment() {
             binding.playerControl.setImageResource(R.drawable.button_stop)
         } else {
             binding.playerControl.setImageResource(R.drawable.button_play)
+        }
+    }
+
+    private fun changeFavoriteIcon(isFavorite: Boolean) {
+        if(isFavorite) {
+            binding.favoriteButton.setImageResource(R.drawable.button_like)
+        } else {
+            binding.favoriteButton.setImageResource(R.drawable.button_1)
         }
     }
 

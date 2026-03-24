@@ -1,10 +1,12 @@
 package com.practicum.playlistmaker.player.ui
 
 import android.media.MediaPlayer
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.practicum.playlistmaker.search.domain.db.FavoritesInteractor
 import com.practicum.playlistmaker.search.domain.models.Track
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -14,7 +16,8 @@ import java.util.Locale
 
 class PlayerViewModel(
     private val track: Track,
-    private val mediaPlayer: MediaPlayer
+    private val mediaPlayer: MediaPlayer,
+    private val favoritesInteractor:FavoritesInteractor
 ): ViewModel() {
     companion object {
         private const val DELAY_UPDATE_PROGRESS = 300L
@@ -22,10 +25,25 @@ class PlayerViewModel(
 
     private val playerLiveData = MutableLiveData<PlayerState>(PlayerState.Default())
     fun observePlayer(): LiveData<PlayerState> = playerLiveData
+
+    private val trackLiveData = MutableLiveData(track)
+    fun observeTrack(): LiveData<Track> = trackLiveData
+
     private var timerJob: Job? = null
 
     init {
         preparePlayer()
+    }
+
+    /** Отображение избранного */
+    fun loadIsFavorite() {
+        viewModelScope.launch {
+            favoritesInteractor.favoriteTrackById(track.trackId.toString()).collect {
+                if(it != null) {
+                    trackLiveData.postValue(trackLiveData.value!!.copy(isFavorite = true))
+                }
+            }
+        }
     }
 
     override fun onCleared() {
@@ -36,6 +54,21 @@ class PlayerViewModel(
 
     fun onPause() {
         pausePlayer()
+    }
+
+    /** Обработка клика на "Добавление в избранное" */
+    fun favoriteHandler() {
+        viewModelScope.launch {
+            val updateTrack = trackLiveData.value!!.copy(isFavorite = !trackLiveData.value!!.isFavorite)
+            trackLiveData.postValue(updateTrack)
+
+
+            if (updateTrack.isFavorite) {
+                favoritesInteractor.addTrack(updateTrack)
+            } else {
+                favoritesInteractor.removeTrack(updateTrack)
+            }
+        }
     }
 
     /** Поведение плеера */

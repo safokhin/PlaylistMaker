@@ -20,6 +20,9 @@
         <action
             android:id="@+id/action_mediaLibraryFragment_to_playlistsFragment"
             app:destination="@id/playlistsFragment" />
+        <action
+            android:id="@+id/action_mediaLibraryFragment_to_playerFragment"
+            app:destination="@id/playerFragment" />
     </fragment>
     <fragment
         android:id="@+id/searchFragment"
