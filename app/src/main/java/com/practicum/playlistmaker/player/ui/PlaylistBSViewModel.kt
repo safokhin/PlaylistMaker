@@ -16,18 +16,18 @@ class PlaylistBSViewModel(
     private val playlistBSLiveData = MutableLiveData<PlaylistBSState>()
     fun observePlaylistBSLiveData(): LiveData<PlaylistBSState> = playlistBSLiveData
 
-    fun addTrackInPlaylist(track: Track, playlist: Playlist): Boolean {
-        val isContainsTrack = playlist.tracksId.contains(track.trackId)
-
+    fun addTrackInPlaylist(track: Track, playlist: Playlist) {
         viewModelScope.launch {
+            val isContainsTrack = playlist.tracksId.contains(track.trackId)
 
             if (!isContainsTrack) {
+                playlistBSLiveData.postValue(PlaylistBSState.TrackStatus(TrackStatusState.Added(playlist)))
                 playlistInteractor.addTrack(track, playlist)
                 loadPlaylists()
+            } else {
+                playlistBSLiveData.postValue(PlaylistBSState.TrackStatus(TrackStatusState.AlreadyExists(playlist)))
             }
         }
-
-        return isContainsTrack
     }
 
     fun loadPlaylists() {

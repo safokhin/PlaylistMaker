@@ -87,7 +87,7 @@ class PlayerFragment : Fragment() {
         binding.recyclerView.adapter = playlistAdapter
         viewModelBS.loadPlaylists()
         viewModelBS.observePlaylistBSLiveData().observe(viewLifecycleOwner) {
-            renderPlaylists(it)
+            renderPlaylists(it) //
         }
 
         viewModel.observePlayer().observe(viewLifecycleOwner) {
@@ -126,24 +126,28 @@ class PlayerFragment : Fragment() {
         playlistAdapter.setList(playlists)
     }
 
-    private fun selectPlaylistHandler(playlist: Playlist) {
-        val isContainsTrack = viewModelBS.addTrackInPlaylist(viewModel.getTrack(), playlist)
-
-        bottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
-
-        if (isContainsTrack) {
-            Toast.makeText(
-                requireContext(),
-                getString(R.string.playlist_track_add_already, playlist.name),
-                Toast.LENGTH_LONG
-            ).show()
-        } else {
-            Toast.makeText(
-                requireContext(),
-                getString(R.string.playlist_track_add, playlist.name),
-                Toast.LENGTH_LONG
-            ).show()
+    private fun showTrackStatus(state: PlaylistBSState.TrackStatus) {
+        when(state.trackStatus) {
+            is TrackStatusState.AlreadyExists -> {
+                Toast.makeText(
+                    requireContext(),
+                    getString(R.string.playlist_track_add_already, state.trackStatus.playlist.name),
+                    Toast.LENGTH_LONG
+                ).show()
+            }
+            is TrackStatusState.Added -> {
+                bottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
+                Toast.makeText(
+                    requireContext(),
+                    getString(R.string.playlist_track_add, state.trackStatus.playlist.name),
+                    Toast.LENGTH_LONG
+                ).show()
+            }
         }
+    }
+
+    private fun selectPlaylistHandler(playlist: Playlist) {
+        viewModelBS.addTrackInPlaylist(viewModel.getTrack(), playlist)
     }
 
     private fun setTrackData(track: Track) {
@@ -187,6 +191,7 @@ class PlayerFragment : Fragment() {
     private fun renderPlaylists(state: PlaylistBSState) {
         when(state) {
             is PlaylistBSState.Content -> showPlaylists(state.playlists)
+            is PlaylistBSState.TrackStatus -> showTrackStatus(state)
         }
     }
 
