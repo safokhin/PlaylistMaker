@@ -33,6 +33,7 @@ class PlaylistsViewHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
         Glide.with(itemView)
             .load(Uri.fromFile(File(model.uri ?: "")))
             .placeholder(R.drawable.track_placeholder_icon)
+            .centerCrop()
             .transform(RoundedCorners(Converter.dpToPx(roundedVal, itemView.context)))
             .into(img)
     }
