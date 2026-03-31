@@ -25,4 +25,20 @@
     <string name="new_playlists">New playlist</string>
     <string name="liked_tracks">Liked tracks</string>
     <string name="playlists">Playlists</string>
+    <string name="new_playlist">New Playlist</string>
+    <string name="name_playlist">Name playlist*</string>
+    <string name="description_playlist">Description playlist</string>
+    <string name="create">Create</string>
+    <string name="finish_creating_playlist">Finish creating the playlist?</string>
+    <string name="all_unsaved_data_will_be_lost">All unsaved data will be lost</string>
+    <string name="cancel">Cancel</string>
+    <string name="finish">Finish</string>
+    <string name="add_playlist">Add in playlist</string>
+    <string name="playlist_name_created">Playlist %s created</string>
+    <string name="playlist_track_add">Added to playlist %s</string>
+    <string name="playlist_track_add_already">The track has already been added to the playlist %s</string>
+    <plurals name="playlist_count">
+        <item quantity="one">%d track</item>
+        <item quantity="other">%d tracks</item>
+    </plurals>
 </resources>

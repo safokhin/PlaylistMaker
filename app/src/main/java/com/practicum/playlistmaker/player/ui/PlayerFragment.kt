@@ -5,14 +5,19 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.LinearLayout
+import android.widget.Toast
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
+import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.practicum.playlistmaker.R
 import com.practicum.playlistmaker.databinding.FragmentPlayerBinding
+import com.practicum.playlistmaker.search.domain.models.Playlist
 import com.practicum.playlistmaker.search.domain.models.Track
 import com.practicum.playlistmaker.utils.Converter
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -25,6 +30,12 @@ class PlayerFragment : Fragment() {
     private val viewModel: PlayerViewModel by viewModel {
         parametersOf(getTrack())
     }
+
+    private val viewModelBS: PlaylistBSViewModel by viewModel()
+    private var playlistAdapter = PlaylistBSAdapter { selectPlaylistHandler(it) }
+
+    private lateinit var bottomSheetBehavior: BottomSheetBehavior<LinearLayout>
+
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -45,7 +56,39 @@ class PlayerFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        val bottomSheetContainer = binding.playlistsBS
+        bottomSheetBehavior = BottomSheetBehavior.from(bottomSheetContainer).apply {
+            state = BottomSheetBehavior.STATE_HIDDEN
+        }
+
+        binding.addPlaylistButton.setOnClickListener {
+            bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
+        }
+
+        bottomSheetBehavior.addBottomSheetCallback(object : BottomSheetBehavior.BottomSheetCallback() {
+            override fun onStateChanged(bottomSheet: View, newState: Int) {
+                binding.overlay.visibility =
+                    if (newState == BottomSheetBehavior.STATE_HIDDEN) View.GONE
+                    else View.VISIBLE
+            }
+
+            override fun onSlide(bottomSheet: View, slideOffset: Float) {
+                binding.overlay.alpha = slideOffset.coerceIn(0f, 1f)
+            }
+        })
+
+        binding.btnNewPlaylist.setOnClickListener {
+            findNavController().navigate(R.id.action_playerFragment_to_newPlaylistFragment)
+        }
+
         val track = getTrack()
+
+        binding.recyclerView.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
+        binding.recyclerView.adapter = playlistAdapter
+        viewModelBS.loadPlaylists()
+        viewModelBS.observePlaylistBSLiveData().observe(viewLifecycleOwner) {
+            renderPlaylists(it)
+        }
 
         viewModel.observePlayer().observe(viewLifecycleOwner) {
             changePlayerIcon(it.isPlay)
@@ -77,6 +120,30 @@ class PlayerFragment : Fragment() {
 
     private fun getTrack(): Track {
         return requireArguments().getParcelable(EXTRA_TRACK_KEY)!!
+    }
+
+    private fun showPlaylists(playlists: List<Playlist>) {
+        playlistAdapter.setList(playlists)
+    }
+
+    private fun selectPlaylistHandler(playlist: Playlist) {
+        val isContainsTrack = viewModelBS.addTrackInPlaylist(viewModel.getTrack(), playlist)
+
+        bottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
+
+        if (isContainsTrack) {
+            Toast.makeText(
+                requireContext(),
+                getString(R.string.playlist_track_add_already, playlist.name),
+                Toast.LENGTH_LONG
+            ).show()
+        } else {
+            Toast.makeText(
+                requireContext(),
+                getString(R.string.playlist_track_add, playlist.name),
+                Toast.LENGTH_LONG
+            ).show()
+        }
     }
 
     private fun setTrackData(track: Track) {
@@ -114,6 +181,12 @@ class PlayerFragment : Fragment() {
             binding.favoriteButton.setImageResource(R.drawable.button_like)
         } else {
             binding.favoriteButton.setImageResource(R.drawable.button_1)
+        }
+    }
+
+    private fun renderPlaylists(state: PlaylistBSState) {
+        when(state) {
+            is PlaylistBSState.Content -> showPlaylists(state.playlists)
         }
     }
 

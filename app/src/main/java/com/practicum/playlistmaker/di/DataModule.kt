@@ -4,6 +4,7 @@ import android.content.Context
 import android.media.MediaPlayer
 import androidx.room.Room
 import com.google.gson.Gson
+import com.practicum.playlistmaker.search.data.converters.Converters
 import com.practicum.playlistmaker.search.data.db.AppDatabase
 import com.practicum.playlistmaker.search.data.network.ItunesApiService
 import com.practicum.playlistmaker.settings.data.ExternalNavigator
@@ -35,6 +36,7 @@ val dataModule = module {
 
     single {
         Room.databaseBuilder(androidContext(), AppDatabase::class.java, "database.db")
+            .addTypeConverter(Converters(get()))
             .build()
     }
 }
