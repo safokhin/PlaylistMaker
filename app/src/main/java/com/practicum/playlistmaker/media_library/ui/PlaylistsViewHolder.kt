@@ -1,7 +1,6 @@
 package com.practicum.playlistmaker.media_library.ui
 
 import android.net.Uri
-import android.os.Environment
 import android.util.Log
 import android.view.View
 import android.widget.ImageView
@@ -13,7 +12,7 @@ import com.practicum.playlistmaker.R
 import com.practicum.playlistmaker.search.domain.models.Playlist
 import com.practicum.playlistmaker.utils.Converter
 import java.io.File
-import androidx.core.net.toUri
+import com.bumptech.glide.load.resource.bitmap.CenterCrop
 
 class PlaylistsViewHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
     private val name = itemView.findViewById<TextView>(R.id.playlistItemLargeName)
@@ -33,8 +32,7 @@ class PlaylistsViewHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
         Glide.with(itemView)
             .load(Uri.fromFile(File(model.uri ?: "")))
             .placeholder(R.drawable.track_placeholder_icon)
-            .centerCrop()
-            .transform(RoundedCorners(Converter.dpToPx(roundedVal, itemView.context)))
+            .transform(CenterCrop(), RoundedCorners(Converter.dpToPx(roundedVal, itemView.context)))
             .into(img)
     }
 }
