@@ -24,6 +24,24 @@
     <string name="new_playlists">Новый плейлист</string>
     <string name="liked_tracks">Избранные треки</string>
     <string name="playlists">Плейлисты</string>
+    <string name="new_playlist">Новый плейлист</string>
+    <string name="name_playlist">Название*</string>
+    <string name="description_playlist">Описание</string>
+    <string name="create">Создать</string>
+    <string name="finish_creating_playlist">Завершить создание плейлиста?</string>
+    <string name="all_unsaved_data_will_be_lost">Все несохраненные данные будут потеряны</string>
+    <string name="cancel">Отмена</string>
+    <string name="finish">Завершить</string>
+    <string name="add_playlist">Добавить в плейлист</string>
+    <string name="playlist_name_created">Плейлист %s создан</string>
+    <string name="playlist_track_add">Добавлено в плейлист %s</string>
+    <string name="playlist_track_add_already">Трек уже добавлен в плейлист %s</string>
+    <plurals name="playlist_count">
+        <item quantity="one">%d трек</item>
+        <item quantity="few">%d трека</item>
+        <item quantity="many">%d треков</item>
+        <item quantity="other">%d трека</item>
+    </plurals>
 
     <string name="link_agree">https://yandex.ru/legal/practicum_offer/ru/</string>
     <string name="link_course">https://practicum.yandex.ru/android-developer/</string>

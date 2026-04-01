@@ -12,7 +12,7 @@
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/clearTrackListHistory"
+        android:id="@+id/btnNewPlaylist"
         android:text="@string/new_playlists"
         android:layout_marginTop="@dimen/spacing_md"
         style="@style/PlaceholderButton" />
@@ -36,4 +36,11 @@
             android:text="@string/not_created_playlists"
             style="@style/PlaceholderText" />
     </LinearLayout>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:layout_marginHorizontal="12dp" />
 </LinearLayout>

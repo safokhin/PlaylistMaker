@@ -32,6 +32,10 @@ class PlayerViewModel(
         preparePlayer()
     }
 
+    fun getTrack(): Track {
+        return playerLiveData.value?.track!!
+    }
+
     /** Отображение избранного */
     fun loadIsFavorite() {
         viewModelScope.launch {
