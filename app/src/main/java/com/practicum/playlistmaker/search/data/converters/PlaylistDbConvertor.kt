@@ -10,8 +10,8 @@ class PlaylistDbConvertor {
             name = playlist.name,
             description = playlist.description,
             uri = playlist.uri,
-            tracksId = playlist.tracksId,
-            tracksCount = playlist.tracksCount)
+            tracksId = playlist.tracksId
+        )
     }
 
     fun map(playlist: PlaylistEntity): Playlist {
@@ -21,7 +21,6 @@ class PlaylistDbConvertor {
             description = playlist.description,
             uri = playlist.uri,
             tracksId = playlist.tracksId,
-            tracksCount = playlist.tracksCount
         )
     }
 }

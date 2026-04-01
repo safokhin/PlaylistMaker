@@ -37,6 +37,10 @@
     <string name="playlist_name_created">Playlist %s created</string>
     <string name="playlist_track_add">Added to playlist %s</string>
     <string name="playlist_track_add_already">The track has already been added to the playlist %s</string>
+    <string name="no_track_in_playlist">There are no tracks in this playlist</string>
+    <string name="share">Share</string>
+    <string name="edit_info">Edit information</string>
+    <string name="remove_playlist">Delete playlist</string>
     <plurals name="playlist_count">
         <item quantity="one">%d track</item>
         <item quantity="other">%d tracks</item>
