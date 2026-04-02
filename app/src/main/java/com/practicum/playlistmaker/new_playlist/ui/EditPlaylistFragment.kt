@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
 import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.CenterCrop
@@ -24,6 +25,13 @@ class EditPlaylistFragment: NewPlaylistFragment() {
 
         binding.btnCreate.text = getString(R.string.save)
         binding.btnBack.title = getString(R.string.edit)
+
+        binding.btnBack.setOnClickListener { findNavController().popBackStack() }
+        requireActivity().onBackPressedDispatcher.addCallback(object: OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                findNavController().popBackStack()
+            }
+        })
 
         binding.btnCreate.setOnClickListener {
             val playlistUri = viewModel.getUri()

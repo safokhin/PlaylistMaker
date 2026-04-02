@@ -56,7 +56,7 @@ open class NewPlaylistFragment : Fragment() {
         backDialog = initBackDialog()
 
         viewModel.observePlaylist().observe(viewLifecycleOwner) {
-            binding.btnCreate.isEnabled = !it.name.isEmpty()
+            binding.btnCreate.isEnabled = !it.name.trim().isEmpty()
 
             val roundedVal: Float = resources.getDimension(R.dimen.radius_sm)
 
