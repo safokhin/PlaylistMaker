@@ -1,6 +1,7 @@
 package com.practicum.playlistmaker.media_library.ui
 
 import android.os.Bundle
+import androidx.core.os.bundleOf
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -10,6 +11,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import com.practicum.playlistmaker.R
 import com.practicum.playlistmaker.databinding.FragmentPlaylistsBinding
+import com.practicum.playlistmaker.playlist.ui.PlaylistFragment
 import com.practicum.playlistmaker.search.domain.models.Playlist
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
@@ -51,7 +53,11 @@ class PlaylistsFragment : Fragment() {
     }
 
     private fun selectPlaylistHandler(playlist: Playlist) {
-        Log.i("CLICK", "CLICK")
+        val bundle = Bundle().apply {
+            putLong(PlaylistFragment.PLAYLIST_ID, playlist.id)
+        }
+
+        findNavController().navigate(R.id.action_mediaLibraryFragment_to_playlistFragment2, bundle)
     }
 
     private fun showEmpty() {

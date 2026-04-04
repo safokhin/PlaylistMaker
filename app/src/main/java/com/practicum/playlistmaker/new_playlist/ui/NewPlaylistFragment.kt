@@ -19,6 +19,7 @@ import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.resource.bitmap.CenterCrop
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.practicum.playlistmaker.R
@@ -28,9 +29,9 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.io.File
 import java.io.FileOutputStream
 
-class NewPlaylistFragment : Fragment() {
-    private lateinit var binding: FragmentNewPlaylistBinding
-    private val viewModel by viewModel<NewPlaylistViewModel>()
+open class NewPlaylistFragment : Fragment() {
+    protected lateinit var binding: FragmentNewPlaylistBinding
+    protected open val viewModel by viewModel<NewPlaylistViewModel>()
 
     lateinit var backDialog: MaterialAlertDialogBuilder
 
@@ -55,16 +56,15 @@ class NewPlaylistFragment : Fragment() {
         backDialog = initBackDialog()
 
         viewModel.observePlaylist().observe(viewLifecycleOwner) {
-            binding.btnCreate.isEnabled = !it.name.isEmpty()
+            binding.btnCreate.isEnabled = !it.name.trim().isEmpty()
 
-            val roundedVal: Float = resources.getDimension(R.dimen.radius_md)
+            val roundedVal: Float = resources.getDimension(R.dimen.radius_sm)
 
             it.uri?.let { uri ->
 
                 Glide.with(this)
                     .load(uri)
-                    .centerCrop()
-                    .transform(RoundedCorners(Converter.dpToPx(roundedVal, this.requireContext())))
+                    .transform(CenterCrop(), RoundedCorners(Converter.dpToPx(roundedVal, this.requireContext())))
                     .into(binding.playlistAddPhoto)
             }
         }
@@ -126,7 +126,7 @@ class NewPlaylistFragment : Fragment() {
         binding.btnCreate.isEnabled = false
     }
 
-    private fun initBackDialog(): MaterialAlertDialogBuilder {
+    protected fun initBackDialog(): MaterialAlertDialogBuilder {
         return MaterialAlertDialogBuilder(requireContext())
             .setTitle(resources.getString(R.string.finish_creating_playlist))
             .setMessage(resources.getString(R.string.all_unsaved_data_will_be_lost))
@@ -137,7 +137,7 @@ class NewPlaylistFragment : Fragment() {
             }
     }
 
-    private fun saveImageToPrivateStorage(uri: Uri): String {
+    protected fun saveImageToPrivateStorage(uri: Uri): String {
         // Создаём экземпляр класса File, который указывает на нужный каталог
         val filePath = File(requireActivity().getExternalFilesDir(Environment.DIRECTORY_PICTURES), "myalbum")
 

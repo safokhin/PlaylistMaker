@@ -21,8 +21,8 @@ class PlaylistBSViewHolder(itemView: View): RecyclerView.ViewHolder(itemView)  {
         name.text = model.name
         countTracks.text = itemView.context.resources.getQuantityString(
             R.plurals.playlist_count,
-            model.tracksCount,
-            model.tracksCount
+            model.tracksId.size,
+            model.tracksId.size
         )
 
         val roundedVal: Float = itemView.context.resources.getDimension(R.dimen.track_image_border_px)

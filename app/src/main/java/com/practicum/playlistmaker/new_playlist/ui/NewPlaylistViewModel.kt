@@ -15,39 +15,39 @@ import kotlinx.coroutines.launch
 import java.io.File
 import java.io.FileOutputStream
 
-class NewPlaylistViewModel(
-    private val playlistInteractor: PlaylistInteractor
+open class NewPlaylistViewModel(
+    protected val playlistInteractor: PlaylistInteractor
 ): ViewModel() {
-    private val playlistLiveData = MutableLiveData(PlaylistState())
-    fun observePlaylist(): LiveData<PlaylistState> = playlistLiveData
+    protected val playlistLiveData = MutableLiveData(PlaylistState())
+    open fun observePlaylist(): LiveData<PlaylistState> = playlistLiveData
 
-    fun getName(): String {
+    open fun getName(): String {
         return playlistLiveData.value?.name ?: ""
     }
 
-    fun getUri(): Uri? {
+    open fun getUri(): Uri? {
         return playlistLiveData.value?.uri
     }
 
-    fun changeName(name: String) {
+    open fun changeName(name: String) {
         playlistLiveData.value = playlistLiveData.value?.copy(name = name)
     }
 
-    fun changeDescription(description: String) {
+    open fun changeDescription(description: String) {
         playlistLiveData.value = playlistLiveData.value?.copy(description = description)
     }
 
-    fun changeImg(uri: Uri) {
+    open fun changeImg(uri: Uri) {
         playlistLiveData.value = playlistLiveData.value?.copy(uri = uri)
     }
 
-    fun isStartCreating(): Boolean {
+    open fun isStartCreating(): Boolean {
         return !playlistLiveData.value?.name?.isEmpty()!! ||
                 !playlistLiveData.value?.description?.isEmpty()!! ||
                 playlistLiveData.value?.uri != null
     }
 
-    fun createPlaylist(absolutePath: String) {
+    open fun createPlaylist(absolutePath: String) {
         viewModelScope.launch {
             playlistInteractor.insertPlaylist(Playlist(
                 name = playlistLiveData.value?.name ?: "",
